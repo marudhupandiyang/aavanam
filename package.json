@@ -4,8 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "aavanam": "./cli/cli.js"
+  },
   "author": "Marudhu Pandiyan G <marudhupandiyang@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@babel/parser": "^7.8.7",
+    "commander": "^4.1.1",
+    "comment-parser": "^0.7.2",
+    "ejs": "^3.0.1",
+    "glob": "^7.1.6"
+  }
 }
