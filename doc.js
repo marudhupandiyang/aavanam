@@ -7,6 +7,12 @@ let templatePath = '';
 let templateData = {};
 let outputPath = path.resolve(__dirname, 'output');
 
+String.prototype.count = function(c) {
+  var result = 0, i = 0;
+  for(i;i<this.length;i++)if(this[i]==c)result++;
+  return result;
+};
+
 const ejsOptions = {
   async: true,
 };
@@ -22,7 +28,7 @@ async function generateFiles(data, template) {
   // Copy
   const paths = [path.resolve(templatePath, 'public/**')];
   paths.push(outputPath);
-  copyfiles(paths, {}, async () => {
+  copyfiles(paths, { up: templatePath.count('/') + 1 }, async () => {
     await generateRoot();
   });
 }
@@ -31,7 +37,7 @@ async function generateRoot() {
   const fileName = '/index.html.ejs';
 
   const renderedHtml = await ejs.renderFile(`${templatePath}${fileName}`, templateData, ejsOptions);
-  fs.writeFileSync(`${outputPath.replace('ejs', '')}${fileName}`, renderedHtml);
+  fs.writeFileSync(`${outputPath}${fileName.replace('.ejs', '')}`, renderedHtml);
 }
 
 module.exports = generateFiles;
