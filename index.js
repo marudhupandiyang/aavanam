@@ -8,13 +8,14 @@ const Doc = require('./doc');
 
 const docData = {
   standardFiles: {},
-  classes: [],
+  classes: {},
   manuals: [],
 };
 
-function addClass(classDetails) {
-  docData.classes = docData.classes || [];
-  docData.classes.push(classDetails);
+function addClass(classDetails, parent) {
+  parent = parent || '/';
+  docData.classes[parent] = docData.classes[parent] || [];
+  docData.classes[parent].push(classDetails);
 }
 
 const Constants = {
@@ -32,8 +33,11 @@ const parseOptions = {
 
 
 async function aavanam(options) {
+  // log(options);
+
   const finalSourcesList = glob.sync(options.globPattern);
-  log('Found source list', finalSourcesList);
+  // log('Found source list', finalSourcesList);
+
   options.manuals = glob.sync(options.manuals);
   docData.outputPath = options.outputPath;
 
@@ -49,21 +53,36 @@ async function aavanam(options) {
     const currentFile = finalSourcesList[sourceLoopIndex];
     log('Starting with', currentFile);
 
-    log('Reading file');
-    const fileContent = fs.readFileSync(currentFile, 'utf-8');
+    try {
+      log('Reading file');
+      const fileContent = fs.readFileSync(currentFile, 'utf-8');
 
-    log('Parsing to tokens');
-    const tokens = parser.parse(fileContent, parseOptions);
+      log('Parsing to tokens');
+      const tokens = parser.parse(fileContent, parseOptions);
 
-    log('Found tokens');
-    parseTokens(tokens);
+      log('Found tokens');
+      const classes = await parseTokens(tokens);
 
-    await parseStandardFiles(options);
-    await parseManuals(options);
+      classes.forEach(c => {
+        const fileName = currentFile.substr(currentFile.lastIndexOf('/') + 1);
+        let filePath = currentFile.replace(`/${fileName}`, '').replace(options.basePath, '');
+        if (filePath[0] === '/') {
+          filePath = filePath.substr(1);
+        }
 
-    log('Final output');
-    await Doc(docData);
+        addClass(c, filePath);
+      });
+
+    } catch (ex) {
+      log('File errored out', currentFile, ex);
+    }
   }
+
+  await parseStandardFiles(options);
+  await parseManuals(options);
+
+  log('Final output');
+  await Doc(docData);
 }
 
 function parseStandardFiles(options) {
@@ -99,16 +118,18 @@ function parseManuals(options) {
 
 function parseTokens(tokens) {
   log('Parsing found tokens');
-  parseProgram(tokens.program);
+  return parseProgram(tokens.program);
 }
 
 function parseProgram(programNode) {
   log('Parsing program node');
-  parseProgramBody(programNode.body);
+  return parseProgramBody(programNode.body);
 }
 
 function parseProgramBody(programBody) {
   log('Parsing body');
+
+  const classes = [];
 
   programBody.forEach(node => {
     log('Dealing with node', node.type);
@@ -120,13 +141,14 @@ function parseProgramBody(programBody) {
         outputfileName: `${node.id.name}.html`,
         ...parseLeadingComments(node.leadingComments),
       };
-
-      addClass(newClass);
+      classes.push(newClass);
     }
   });
+
+  return classes;
 }
 
-function parseLeadingComments(comments) {
+function parseLeadingComments(comments = []) {
   log('Staring with leading comments');
   const values = {
     tags: {},

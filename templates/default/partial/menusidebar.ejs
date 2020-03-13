@@ -18,13 +18,18 @@
     <% } %>
 
     <h3>Classes</h3>
-    <% for(var i=0; i < classes.length; i += 1) { %>
-      <li>
-        <a href="/classes/<%= classes[i].name %>.html">
-          <span class="list-indicator class">C</span>
-          <%= classes[i].name %>
-        </a>
-      </li>
+    <% var classFolders = Object.keys(classes); %>
+    <% for(var j = 0; j < classFolders.length; j +=1) {%>
+      <h4><%= classFolders[j] %></h4>
+      <% for(var i = 0; i < classes[classFolders[j]].length; i += 1) { %>
+        <% var cClass = classes[classFolders[j]][i]; %>
+        <li>
+          <a href="/classes/<%= classFolders[j] %>/<%= cClass.outputfileName %>">
+            <span class="list-indicator class">C</span>
+            <%= cClass.name %>
+          </a>
+        </li>
+      <% } %>
     <% } %>
   </ul>
 </div>

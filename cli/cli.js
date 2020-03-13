@@ -15,10 +15,11 @@ program
   .option('-R, --readme [value]', 'Readme file path')
   .option('-M, --manuals [value]', 'Manuals(.md files) dir path')
   .option('-O, --output [value]', 'Output dir path')
+  .option('-S, --source [value]', 'Input glob pattern')
   .version(pacakge.version)
   .description(pacakge.description)
   .action(function(pattern, cmdObj) {
-    options.globPattern = pattern;
+    options.globPattern = path.resolve(pattern || cmdObj.source);
     options.isRecursive = cmdObj.recursive;
     options.readme = path.resolve(cmdObj.readme);
     options.manuals = path.resolve(cmdObj.manuals, './**/*.md');
@@ -27,6 +28,7 @@ program
 
 
 program.parse(process.argv);
+options.basePath = path.resolve('.');
 
 if (!options.globPattern) {
   console.error('No Source mentioned');
