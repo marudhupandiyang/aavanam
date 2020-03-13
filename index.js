@@ -60,7 +60,6 @@ async function aavanam(options) {
 
 function parseStandardFiles(options) {
   return (new Promise(async (resolve, reject) => {
-    console.dir(options.readme);
     if (options.readme) {
       const content = await fs.readFileSync(options.readme, 'utf-8');
       docData.standardFiles.readme = content;

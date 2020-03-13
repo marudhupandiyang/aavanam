@@ -14,9 +14,7 @@ String.prototype.count = function(c) {
   return result;
 };
 
-const ejsOptions = {
-  async: true,
-};
+const ejsOptions = {};
 
 function getTemplatePath (template = 'default') {
   return path.resolve(__dirname, 'templates/default');
@@ -25,7 +23,7 @@ function getTemplatePath (template = 'default') {
 function generateMarkdownToHtml(content) {
   return new Promise((resolve, reject) => {
     marked(content, {}, (err, result) => {
-      if (err) { log('Eroor in markdown to html', err); }
+      if (err) { log('Error in markdown to html', err); }
       resolve(result);
     });
   });
@@ -44,7 +42,7 @@ async function generateFiles(data, template) {
 }
 
 async function generateRoot() {
-  const fileName = '/index.html.ejs';
+  const fileName = '/index.ejs';
 
   const data = {
     title: templateData.title,
@@ -52,8 +50,13 @@ async function generateRoot() {
     content: await generateMarkdownToHtml(templateData.standardFiles.readme || ''),
   };
 
-  const renderedHtml = await ejs.renderFile(`${templatePath}${fileName}`, data, ejsOptions);
-  fs.writeFileSync(`${outputPath}${fileName.replace('.ejs', '')}`, renderedHtml);
+  ejs.renderFile(`${templatePath}${fileName}`, data, ejsOptions, (err, renderedHtml) => {
+    if (err) {
+      log('Rendering error out', fileName, err);
+      return;
+    }
+    fs.writeFileSync(`${outputPath}${fileName.replace('.ejs', '.html')}`, renderedHtml);
+  });
 }
 
 module.exports = generateFiles;

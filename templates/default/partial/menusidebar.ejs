@@ -1,0 +1,18 @@
+<div class="left-menu">
+  <ul>
+    <li>
+      <a href="/index.html">
+        <span class="list-indicator index">H</span>
+        Index
+      </a>
+    </li>
+    <% for(var i=0; i < classes.length; i += 1) { %>
+      <li>
+        <a href="<%= classes[i].name %>.html">
+          <span class="list-indicator class">C</span>
+          <%= classes[i].name %>
+        </a>
+      </li>
+    <% } %>
+  </ul>
+</div>

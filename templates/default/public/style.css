@@ -1,3 +1,7 @@
+:root {
+  --grey-bg-color: #fafafa;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -9,17 +13,91 @@ body {
   padding: 0;
   margin: 0;
   display: flex;
+  flex-direction: column;
+}
+
+header {
+  margin: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+  background-color: var(--grey-bg-color);
+  top: 0;
+  border-bottom: solid 1px #ddd;
+  height: 50px;
+}
+
+header .logo {
+  display: flex;
+  width: 100%;
+  padding: 0.5rem;
+  text-decoration: none;
+  align-items: center;
+}
+
+header .logo img {
+  width: 35px;
+}
+
+header .logo .title {
+  margin-left: 0.5rem;
+  text-transform: capitalize;
+}
+
+footer {
+  background-color: var(--grey-bg-color);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: solid 1px #ddd;
+}
+
+.body-container {
+  display: flex;
   flex-direction: row;
+  flex: 1;
+  margin-top: 50px;
 }
 
 .left-menu {
-  width: 15%;
+  width: 250px;
   height: 100%;
   font-size: 1rem;
-  padding: 1rem;
+  padding: 0 1rem;
   border-right: 2px solid #ccc;
 }
 
+.left-menu ul {
+  padding: 0;
+}
+
+.left-menu ul li {
+  list-style-position: inside;
+  list-style-type: none;
+  line-height: 1.5;
+}
+
+.left-menu ul li a,
+.left-menu ul li a:visited {
+  text-decoration: none;
+  color: #333;
+}
+
+.left-menu ul li a .list-indicator {
+  padding: 0.1rem 0.25rem;
+  background-color: #cccccc;
+  color: #ffffff;
+  border-radius: 2px;
+  margin-right: 0.1rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.left-menu ul li a .list-indicator.class {
+  background-color: #4CAF50;
+}
+
 .content {
-  padding: 1rem 2rem;
+  padding: 0rem 2rem;
 }

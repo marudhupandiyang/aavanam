@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./cli/cli.js",
+    "start": "node ./cli/cli.js build -R README.md example/**",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
