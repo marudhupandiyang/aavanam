@@ -88,18 +88,37 @@ class DocGenerator {
       const newManual = {
         name: path.basename(this.manuals[i], '.md'),
         content: await FileHelper.readFile(this.manuals[i]),
+        pageTitle: `${this.manuals[i].name} Manual | ${this.options.title}`,
       };
       newManual.outputPath = this.getOutputPath(`manuals/${newManual.name}`);
       newManual.relativePath = this.getRelativePath(newManual.outputPath);
       manuals.push(newManual);
     }
 
+    const classes = { ...this.classes };
+    const folders = Object.keys(classes);
+    for (let folderI = 0; folderI < folders.length; folderI += 1) {
+      const currentClasses = classes[folders[folderI]];
+      for (let currentClassI = 0; currentClassI < currentClasses.length; currentClassI += 1) {
+        const currentClass = {
+          ...currentClasses[currentClassI],
+          pageTitle: `${currentClasses.name} Manual | ${this.options.title}`,
+        };
+
+        currentClass.outputPath = this.getOutputPath(`${folders[folderI]}/classes/${currentClass.name}`);
+        currentClass.relativePath = this.getRelativePath(currentClass.outputPath);
+        currentClasses[currentClassI] = currentClass;
+      }
+    }
+
     return {
       manuals,
+      classes,
     };
   }
 
-  async generateManuals(manuals) {
+  async generateManuals() {
+    const manuals = viewVariables.manuals;
     return new Promise(async (resolve, reject) => {
       for (let i = 0; i < manuals.length; i += 1) {
         const currentManual = manuals[i];
@@ -108,10 +127,30 @@ class DocGenerator {
           ...currentManual,
           templatePath: this.getTemplatePath('manual'),
           data: {
-            pageTitle: `${currentManual.name} Manual | ${this.options.title}`,
             content: fileContent,
           },
         });
+      }
+    });
+  }
+
+  async generateClasses() {
+    const classes = viewVariables.classes;
+    return new Promise(async (resolve, reject) => {
+      const folders = Object.keys(classes);
+
+      for (let folderI = 0; folderI < folders.length; folderI += 1) {
+        const currentClasses = classes[folders[folderI]];
+        for (let currentClassI = 0; currentClassI < currentClasses.length; currentClassI += 1) {
+          const currentClass = currentClasses[currentClassI];
+          await FileHelper.renderTemplate({
+            outputPath: currentClass.outputPath,
+            templatePath: this.getTemplatePath('class'),
+            data: {
+              currentClass
+            },
+          });
+        }
       }
     });
   }
@@ -133,17 +172,13 @@ class DocGenerator {
       ...(await data),
     };
 
-
-    // console.log('aa');
-    // console.dir(viewVariables);
-
     const publicPath = `${this.templatePath}/public/**`;
     copyfiles([publicPath, this.outputPath], { up: this.templatePath.count('/') + 1 }, async () => {
 
-      this.generateManuals(viewVariables.manuals);
-      this.generateHomePage(viewVariables.classes);
+      this.generateManuals();
+      this.generateHomePage();
+      this.generateClasses();
     });
-
   }
 }
 

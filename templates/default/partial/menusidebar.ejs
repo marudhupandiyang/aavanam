@@ -24,7 +24,7 @@
       <% for(var i = 0; i < classes[classFolders[j]].length; i += 1) { %>
         <% var cClass = classes[classFolders[j]][i]; %>
         <li>
-          <a href="/classes/<%= classFolders[j] %>/<%= cClass.outputfileName %>">
+          <a href="<%= cClass.relativePath %>">
             <span class="list-indicator class">C</span>
             <%= cClass.name %>
           </a>

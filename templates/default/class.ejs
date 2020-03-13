@@ -10,7 +10,8 @@
     <div class="body-container">
       <%- include('partial/menusidebar') %>
       <div class="content">
-        <h2><%= currentClass.name %></h2>
+        <div class="breadcrumb"><%= currentClass.parent %></div>
+        <h2 class="class-name"><%= currentClass.name %></h2>
         <% if (currentClass.extends) { %>
           <div class="extends">
             <div class="title">Extends:</div>

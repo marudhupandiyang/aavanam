@@ -92,7 +92,7 @@ async function aavanam(options) {
         }
         c.parent = filePath;
 
-        // myDoc(c);
+        myDoc.addClass(c);
         addClass(c, filePath);
       });
 
