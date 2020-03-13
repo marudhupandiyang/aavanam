@@ -49,7 +49,7 @@ async function generateRoot() {
   const data = {
     title: templateData.title,
     classes: templateData.classes,
-    content: await generateMarkdownToHtml(templateData.standardFiles.readme),
+    content: await generateMarkdownToHtml(templateData.standardFiles.readme || ''),
   };
 
   const renderedHtml = await ejs.renderFile(`${templatePath}${fileName}`, data, ejsOptions);

@@ -32,8 +32,8 @@ function log(...msg) {
   console.log(new Date(), 'Parser', ...msg);
 }
 
-async function aavanam(globPattern, isRecursive) {
-  const finalSourcesList = glob.sync(globPattern);
+async function aavanam(options) {
+  const finalSourcesList = glob.sync(options.globPattern);
   log('Found source list', finalSourcesList);
 
   docData.title = 'Test App';
@@ -51,17 +51,20 @@ async function aavanam(globPattern, isRecursive) {
     log('Found tokens');
     parseTokens(tokens);
 
-    await parseStandardFiles();
+    await parseStandardFiles(options);
 
     log('Final output');
     await Doc(docData);
   }
 }
 
-function parseStandardFiles() {
+function parseStandardFiles(options) {
   return (new Promise(async (resolve, reject) => {
-    const content = await fs.readFileSync('README.md', 'utf-8');
-    docData.standardFiles.readme = content;
+    console.dir(options.readme);
+    if (options.readme) {
+      const content = await fs.readFileSync(options.readme, 'utf-8');
+      docData.standardFiles.readme = content;
+    }
     resolve();
   }));
 }
