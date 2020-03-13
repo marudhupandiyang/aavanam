@@ -50,9 +50,9 @@ async function generateFiles(data, template) {
   paths.push(outputPath);
   log(JSON.stringify(templateData, null, 2));
   copyfiles(paths, { up: templatePath.count('/') + 1 }, async () => {
-    await generateRoot();
-    await generateClasses();
-    await generateManuals();
+    // await generateRoot();
+    // await generateClasses();
+    // await generateManuals();
   });
 }
 

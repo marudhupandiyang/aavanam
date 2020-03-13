@@ -1,12 +1,16 @@
+// const path = require('path');
 const fs = require('fs');
 const glob = require("glob");
 const parser = require("@babel/parser");
 const commentParser = require('comment-parser');
 
+require('./docGenerator');
 require('./viewMethods');
 
 const { log } = require('./lib');
 const Doc = require('./doc');
+
+const myDoc = new DocGenerator();
 
 const docData = {
   standardFiles: {},
@@ -44,26 +48,27 @@ const parseOptions = {
   ],
 };
 
-
 async function aavanam(options) {
-  // log(options);
-
   const finalSourcesList = glob.sync(options.globPattern);
-  // log('Found source list', finalSourcesList);
 
   options.manuals = glob.sync(options.manuals);
-  docData.outputPath = options.outputPath;
 
-  if (!docData.outputPath) {
-    log('No Output path defined');
-    return;
-  }
+  myDoc.setTemplatePath(options.templatePath);
+  myDoc.setOutputPath(options.outputPath);
+  myDoc.setHomeFile(options.readme);
+  myDoc.addManuals(options.manuals);
+
+  docData.outputPath = options.outputPath;
 
   log('manuals', docData.manuals);
   docData.title = 'Test App';
 
   for(let sourceLoopIndex = 0; sourceLoopIndex < finalSourcesList.length; sourceLoopIndex += 1) {
     const currentFile = finalSourcesList[sourceLoopIndex];
+    if (!currentFile.endsWith('.jsx') && !currentFile.endsWith('.js')) {
+      log('Skipping file', currentFile);
+      continue;
+    }
     log('Starting with', currentFile);
 
     try {
@@ -82,7 +87,9 @@ async function aavanam(options) {
         if (filePath[0] === '/') {
           filePath = filePath.substr(1);
         }
+        c.parent = filePath;
 
+        // myDoc(c);
         addClass(c, filePath);
       });
 
@@ -91,11 +98,12 @@ async function aavanam(options) {
     }
   }
 
-  await parseStandardFiles(options);
-  await parseManuals(options);
+  // await parseStandardFiles(options);
+  // await parseManuals(options);
 
   log('Final output');
-  await Doc(docData);
+  myDoc.generate();
+  // await Doc(docData);
 }
 
 function parseStandardFiles(options) {
@@ -105,6 +113,7 @@ function parseStandardFiles(options) {
       log('Parsing readme');
       const content = await fs.readFileSync(options.readme, 'utf-8');
       docData.standardFiles.readme = content;
+      myDoc.setHomeContentAsMarkdown(options.readme);
       resolve();
     }));
   }
@@ -118,11 +127,13 @@ function parseManuals(options) {
         const fileName = options.manuals[i].substr(options.manuals[i].lastIndexOf('/') + 1);
         log('Parsing manual', fileName);
         const content = await fs.readFileSync(options.manuals[i], 'utf-8');
-        docData.manuals.push({
+        const cls = {
           name: fileName.replace('.md', ''),
           outputfileName: fileName.replace('.md', '.html'),
           content,
-        });
+        };
+        myDoc.addManual(cls);
+        docData.manuals.push(cls);
       }
       resolve();
     }));
