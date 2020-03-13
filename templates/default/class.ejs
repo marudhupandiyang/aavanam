@@ -5,18 +5,41 @@
     <title><%= title %></title>
     <link rel="stylesheet" type="text/css" href="/public/style.css">
   </head>
-  <body>
+  <body class="class-detail">
     <%- include('partial/header'); %>
     <div class="body-container">
       <%- include('partial/menusidebar') %>
       <div class="content">
         <h2><%= currentClass.name %></h2>
+        <% if (currentClass.extends) { %>
+          <div class="extends">
+            <div class="title">Extends:</div>
+            <div class="content">
+              <% currentClass.extends.forEach(function(e) { %>
+                <span><%= e %></span>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
         <p class="sub-heading">
           <%= currentClass.subHeading %>
         </p>
         <p class="description">
           <%= currentClass.description %>
         </p>
+
+        <% if (currentClass.methods.constructor) { %>
+          <%- include('partial/summary-table', {
+            title: 'Constructor',
+            tableTitle: 'Public Constructor',
+            columns: [
+              {
+                title: 'Public',
+                value: 'constructor()',
+              }
+            ]
+          }) %>
+        <% } %>
       </div>
     </div>
     <%- include('partial/footer') %>

@@ -211,4 +211,26 @@ footer {
   height: 100%;
   overflow: auto;
   padding: 0rem 2rem;
+  font-size: 0.9rem;
+}
+
+.class-detail .content .extends {
+  margin: 0.5rem 0;
+}
+
+.class-detail .content .extends .title {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.class-detail .content .extends .content {
+  margin-left: 0.5rem;
+}
+
+.class-detail .content .extends span:not(:last-child):after {
+  content: ' -> ';
+}
+
+.class-detail .content .method table {
+  width: 100%;
 }

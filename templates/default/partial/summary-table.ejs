@@ -1,0 +1,24 @@
+<div class="method constructor">
+  <h4><%= title %></h4>
+  <table>
+    <thead>
+      <tr>
+        <td colspan="2">
+          <%= tableTitle %>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <% for(var i = 0; i < columns.length; i +=1) {%>
+        <tr>
+          <td>
+            <%= columns[i].title %>
+          </td>
+          <td>
+            <%= columns[i].value %>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>

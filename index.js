@@ -21,6 +21,12 @@ function addClass(classDetails, parent) {
 const Constants = {
   ClassDeclaration: 'ClassDeclaration',
   CommentBlock: 'CommentBlock',
+  Tag: {
+    desc: 'desc',
+  },
+  Node: {
+    Constructor: 'constructor',
+  }
 };
 
 const parseOptions = {
@@ -140,12 +146,43 @@ function parseProgramBody(programBody) {
         name: node.id.name,
         outputfileName: `${node.id.name}.html`,
         ...parseLeadingComments(node.leadingComments),
+        ...parseExtends(node),
+        ...parseMemebers(node),
       };
       classes.push(newClass);
     }
   });
 
   return classes;
+}
+
+function parseMemebers(node) {
+  const classBodyNodes = node.body.body
+  const value = {};
+
+  classBodyNodes.forEach(n => {
+    const nValue = {};
+    nValue.name = n.key.name;
+    nValue.params = (n.params || []).map(p => p.name);
+    if (n.kind === Constants.Node.Constructor) {
+      value.constructor = nValue;
+    }
+  });
+  return { methods: value };
+}
+
+function parseExtends(node) {
+  const value = [];
+
+  if (node.superClass) {
+    if (node.superClass.object) {
+      value.push(node.superClass.object.name);
+    }
+    if (node.superClass.property) {
+      value.push(node.superClass.property.name);
+    }
+    return { extends: value };
+  }
 }
 
 function parseLeadingComments(comments = []) {
@@ -163,16 +200,19 @@ function parseLeadingComments(comments = []) {
       log('Unknown comment block ', comment.type);
     }
 
-    const parsedComment = commentParser(commentValue, {
+    let parsedComment = commentParser(commentValue, {
       trim: true,
     });
+    parsedComment = parsedComment[0];
 
     values.subHeading = parsedComment.description;
 
-    parsedComment.forEach(pComment => {
-      pComment.tags.forEach(t => {
-        values.tags[pComment.type] = pComment.description;
-      });
+    parsedComment.tags.forEach(t => {
+      if (t.tag === Constants.Tag.desc) {
+        values.description = `${t.name} ${t.description}`;
+      } else {
+        values.tags[t.type] = t.description;
+      }
     });
   });
 
