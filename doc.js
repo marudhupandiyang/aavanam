@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const ejs = require('ejs');
 const copyfiles = require('copyfiles');
+const marked = require('marked');
 
 let templatePath = '';
 let templateData = {};
@@ -21,6 +22,14 @@ function getTemplatePath (template = 'default') {
   return path.resolve(__dirname, 'templates/default');
 }
 
+function generateMarkdownToHtml(content) {
+  return new Promise((resolve, reject) => {
+    marked(content, {}, (err, result) => {
+      resolve(result);
+    });
+  });
+}
+
 async function generateFiles(data, template) {
   templatePath = getTemplatePath(template);
   templateData = data;
@@ -36,7 +45,13 @@ async function generateFiles(data, template) {
 async function generateRoot() {
   const fileName = '/index.html.ejs';
 
-  const renderedHtml = await ejs.renderFile(`${templatePath}${fileName}`, templateData, ejsOptions);
+  const data = {
+    title: templateData.title,
+    classes: templateData.classes,
+    content: await generateMarkdownToHtml(templateData.standardFiles.readme),
+  };
+
+  const renderedHtml = await ejs.renderFile(`${templatePath}${fileName}`, data, ejsOptions);
   fs.writeFileSync(`${outputPath}${fileName.replace('.ejs', '')}`, renderedHtml);
 }
 

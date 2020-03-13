@@ -6,6 +6,8 @@ const commentParser = require('comment-parser');
 const Doc = require('./doc');
 
 const docData = {
+  standardFiles: {},
+  classes: [],
 };
 
 function addClass(classDetails) {
@@ -49,9 +51,19 @@ async function aavanam(globPattern, isRecursive) {
     log('Found tokens');
     parseTokens(tokens);
 
+    await parseStandardFiles();
+
     log('Final output');
     await Doc(docData);
   }
+}
+
+function parseStandardFiles() {
+  return (new Promise(async (resolve, reject) => {
+    const content = await fs.readFileSync('README.md', 'utf-8');
+    docData.standardFiles.readme = content;
+    resolve();
+  }));
 }
 
 function parseTokens(tokens) {
