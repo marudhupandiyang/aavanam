@@ -6,6 +6,18 @@
         Index
       </a>
     </li>
+
+    <h3>Manuals</h3>
+    <% for(var i=0; i < manuals.length; i += 1) { %>
+      <li>
+        <a href="<%= manuals[i].name %>.html">
+          <span class="list-indicator manual">M</span>
+          <%= manuals[i].name %>
+        </a>
+      </li>
+    <% } %>
+
+    <h3>Classes</h3>
     <% for(var i=0; i < classes.length; i += 1) { %>
       <li>
         <a href="<%= classes[i].name %>.html">

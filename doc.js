@@ -38,6 +38,7 @@ async function generateFiles(data, template) {
   paths.push(outputPath);
   copyfiles(paths, { up: templatePath.count('/') + 1 }, async () => {
     await generateRoot();
+    await generateManuals();
   });
 }
 
@@ -48,6 +49,7 @@ async function generateRoot() {
     title: templateData.title,
     classes: templateData.classes,
     content: await generateMarkdownToHtml(templateData.standardFiles.readme || ''),
+    manuals: templateData.manuals,
   };
 
   ejs.renderFile(`${templatePath}${fileName}`, data, ejsOptions, (err, renderedHtml) => {
@@ -59,4 +61,6 @@ async function generateRoot() {
   });
 }
 
+async function generateManuals() {
+}
 module.exports = generateFiles;

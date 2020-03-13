@@ -36,6 +36,7 @@ async function aavanam(options) {
   const finalSourcesList = glob.sync(options.globPattern);
   log('Found source list', finalSourcesList);
 
+  docData.manuals = options.manuals;
   docData.title = 'Test App';
 
   for(let sourceLoopIndex = 0; sourceLoopIndex < finalSourcesList.length; sourceLoopIndex += 1) {
