@@ -8,6 +8,7 @@ const DEFAULT_OUTPUT_PATH = path.resolve(__dirname, './templates/default');
 class DocGenerator {
   constructor() {
     this.templatePath = DEFAULT_OUTPUT_PATH;
+    this.options = {};
     this.classes = {};
     this.manuals = [];
 
@@ -40,6 +41,10 @@ class DocGenerator {
       ...this.manuals,
       ...newManuals,
     ];
+  }
+
+  setConfig(options) {
+    this.options = options;
   }
 
   setHomeFile(filePath) {
@@ -103,6 +108,7 @@ class DocGenerator {
           ...currentManual,
           templatePath: this.getTemplatePath('manual'),
           data: {
+            pageTitle: `${currentManual.name} Manual | ${this.options.title}`,
             content: fileContent,
           },
         });
@@ -121,7 +127,7 @@ class DocGenerator {
 
     const data = this.prepare();
     global.viewVariables = {
-      pageTitle: this.pageTitle,
+      pageTitle: this.options.title,
       classes: this.classes,
       content: '',
       ...(await data),

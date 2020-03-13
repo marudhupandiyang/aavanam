@@ -53,6 +53,9 @@ async function aavanam(options) {
 
   options.manuals = glob.sync(options.manuals);
 
+  myDoc.setConfig({
+    title: 'Test',
+  });
   myDoc.setTemplatePath(options.templatePath);
   myDoc.setOutputPath(options.outputPath);
   myDoc.setHomeFile(options.readme);
