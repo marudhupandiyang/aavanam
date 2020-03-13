@@ -34,7 +34,8 @@ function generateMarkdownToHtml(content) {
 async function generateFiles(data, template) {
   templatePath = getTemplatePath(template);
   templateData = data;
-  outputPath = path.resolve(__dirname, 'output');
+  outputPath = data.outputPath;
+
   try {
     fs.rmdirSync(outputPath, { recursive: true });
   } catch (ex) { console.log(ex); }
@@ -73,11 +74,13 @@ async function generateManuals() {
   const manuals = templateData.manuals;
 
   if (manuals) {
+    log('Generating manuals');
     const manualOutputPath = path.resolve(outputPath, 'manuals');
     fs.mkdirSync(manualOutputPath, { recursive: true });
 
     return (new Promise(async (resolve, reject) => {
       for(let i = 0; i < manuals.length; i += 1) {
+        log('Generating manual ', manuals[i].name);
         const data = {
           title: templateData.title,
           classes: templateData.classes,
@@ -91,9 +94,9 @@ async function generateManuals() {
             return;
           }
           fs.writeFileSync(path.resolve(manualOutputPath, manuals[i].outputfileName), renderedHtml);
-          resolve();
         });
       }
+      resolve();
     }));
   }
 }
@@ -121,9 +124,9 @@ async function generateClasses() {
             return;
           }
           fs.writeFileSync(path.resolve(classesOutputPath, classes[i].outputfileName), renderedHtml);
-          resolve();
         });
       }
+      resolve();
     }));
   }
 }

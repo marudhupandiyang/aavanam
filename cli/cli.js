@@ -14,6 +14,7 @@ program
   .option('-r, --recursive', 'Process recursively')
   .option('-R, --readme [value]', 'Readme file path')
   .option('-M, --manuals [value]', 'Manuals(.md files) dir path')
+  .option('-O, --output [value]', 'Output dir path')
   .version(pacakge.version)
   .description(pacakge.description)
   .action(function(pattern, cmdObj) {
@@ -21,6 +22,7 @@ program
     options.isRecursive = cmdObj.recursive;
     options.readme = path.resolve(cmdObj.readme);
     options.manuals = path.resolve(cmdObj.manuals, './**/*.md');
+    options.outputPath = path.resolve(cmdObj.output || './output');
   });
 
 
@@ -30,6 +32,7 @@ if (!options.globPattern) {
   console.error('No Source mentioned');
   process.exit();
 }
+
 
 const aavanam = require('../index.js');
 aavanam(options);

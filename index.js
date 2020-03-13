@@ -35,6 +35,12 @@ async function aavanam(options) {
   const finalSourcesList = glob.sync(options.globPattern);
   log('Found source list', finalSourcesList);
   options.manuals = glob.sync(options.manuals);
+  docData.outputPath = options.outputPath;
+
+  if (!docData.outputPath) {
+    log('No Output path defined');
+    return;
+  }
 
   log('manuals', docData.manuals);
   docData.title = 'Test App';
