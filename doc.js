@@ -48,7 +48,7 @@ async function generateFiles(data, template) {
   // Copy
   const paths = [path.resolve(templatePath, 'public/**')];
   paths.push(outputPath);
-  console.dir(templateData.classes);
+  log(JSON.stringify(templateData, null, 2));
   copyfiles(paths, { up: templatePath.count('/') + 1 }, async () => {
     await generateRoot();
     await generateClasses();

@@ -4,6 +4,19 @@
       <%= access %>
     </span>
     <%= title %>
-    (<%- params.map(p => `<span class="param">${p}</span>`).join(',') %>)
+    (<%- params.map(p => {
+      const v = [`<span class="param">${p}</span>`];
+      if (tags && tags.params[p]) {
+        v.push(`:&nbsp;${view.getTypeWithReferenceLink(tags.params[p].type)}`);
+      }
+      return v.join('');
+    }) %>)
+    <% if (tags.subHeading || tags.description) { %>
+      <div class="description">
+        <%= tags.subHeading %>
+        <%- (tags.subHeading ? '<br />' : '') %>
+        <%= tags.description %>
+      </div>
+    <% } %>
   </h4>
 </div>

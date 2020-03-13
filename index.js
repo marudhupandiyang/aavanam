@@ -3,6 +3,8 @@ const glob = require("glob");
 const parser = require("@babel/parser");
 const commentParser = require('comment-parser');
 
+require('./viewMethods');
+
 const { log } = require('./lib');
 const Doc = require('./doc');
 
@@ -18,11 +20,16 @@ function addClass(classDetails, parent) {
   docData.classes[parent].push(classDetails);
 }
 
+global.REFRENCE_LINKS = {
+  'object': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object',
+};
+
 const Constants = {
   ClassDeclaration: 'ClassDeclaration',
   CommentBlock: 'CommentBlock',
   Tag: {
     desc: 'desc',
+    param: 'param',
   },
   Node: {
     Constructor: 'constructor',
@@ -161,10 +168,11 @@ function parseMemebers(node) {
   const value = [];
 
   classBodyNodes.forEach(n => {
-    console.dir(n);
-    const nValue = {};
-    nValue.name = n.key.name;
-    nValue.params = (n.params || []).map(p => p.name);
+    const nValue = {
+      name: n.key.name,
+      params: (n.params || []).map(p => p.name),
+      ...parseLeadingComments(n.leadingComments),
+    };
     value.push(nValue);
   });
   return { methods: value };
@@ -187,7 +195,10 @@ function parseExtends(node) {
 function parseLeadingComments(comments = []) {
   log('Staring with leading comments');
   const values = {
-    tags: {},
+    subHeading: '',
+    description: '',
+    params: {},
+    others: {},
   };
 
   comments.forEach(comment => {
@@ -207,16 +218,27 @@ function parseLeadingComments(comments = []) {
     values.subHeading = parsedComment.description;
 
     parsedComment.tags.forEach(t => {
-      if (t.tag === Constants.Tag.desc) {
-        values.description = `${t.name} ${t.description}`;
-      } else {
-        values.tags[t.type] = t.description;
+      switch (t.tag) {
+        case Constants.Tag.desc:
+          values.description = `${t.name} ${t.description}`;
+          break;
+
+        case Constants.Tag.param:
+          values.params[t.name] = {
+            type: t.type,
+            desc: t.description,
+          };
+          break;
+
+        default:
+          values.others[t.type] = t.description;
+          break;
       }
     });
   });
 
   log('Done with leading comments');
-  return values;
+  return { tags: values };
 }
 
 

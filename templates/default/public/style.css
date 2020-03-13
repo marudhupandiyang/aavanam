@@ -6,7 +6,7 @@
   --border-color: #dddddd;
   --class-public-access: #008000;
   --class-private-access: #a90505;
-  --class-method-param: #072ec3;
+  --class-method-param: #2c3868;
 }
 
 * {
@@ -258,3 +258,7 @@ footer {
   color: var(--class-private-access);
 }
 
+.class-detail .content .method .description {
+  margin: 0.5rem 1rem;
+  font-size: 0.9em;
+}
