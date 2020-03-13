@@ -3,11 +3,13 @@ const glob = require("glob");
 const parser = require("@babel/parser");
 const commentParser = require('comment-parser');
 
+const { log } = require('./lib');
 const Doc = require('./doc');
 
 const docData = {
   standardFiles: {},
   classes: [],
+  manuals: [],
 };
 
 function addClass(classDetails) {
@@ -28,15 +30,13 @@ const parseOptions = {
   ],
 };
 
-function log(...msg) {
-  console.log(new Date(), 'Parser', ...msg);
-}
 
 async function aavanam(options) {
   const finalSourcesList = glob.sync(options.globPattern);
   log('Found source list', finalSourcesList);
+  options.manuals = glob.sync(options.manuals);
 
-  docData.manuals = options.manuals;
+  log('manuals', docData.manuals);
   docData.title = 'Test App';
 
   for(let sourceLoopIndex = 0; sourceLoopIndex < finalSourcesList.length; sourceLoopIndex += 1) {
@@ -53,6 +53,7 @@ async function aavanam(options) {
     parseTokens(tokens);
 
     await parseStandardFiles(options);
+    await parseManuals(options);
 
     log('Final output');
     await Doc(docData);
@@ -60,13 +61,34 @@ async function aavanam(options) {
 }
 
 function parseStandardFiles(options) {
-  return (new Promise(async (resolve, reject) => {
-    if (options.readme) {
+  if (options.readme) {
+    log('Started parsing standard files');
+    return (new Promise(async (resolve, reject) => {
+      log('Parsing readme');
       const content = await fs.readFileSync(options.readme, 'utf-8');
       docData.standardFiles.readme = content;
-    }
-    resolve();
-  }));
+      resolve();
+    }));
+  }
+}
+
+function parseManuals(options) {
+  if (options.manuals) {
+    log('Started parsing manuals');
+    return (new Promise(async (resolve, reject) => {
+      for(let i = 0; i < options.manuals.length; i += 1) {
+        const fileName = options.manuals[i].substr(options.manuals[i].lastIndexOf('/') + 1);
+        log('Parsing manual', fileName);
+        const content = await fs.readFileSync(options.manuals[i], 'utf-8');
+        docData.manuals.push({
+          name: fileName.replace('.md', ''),
+          outputfileName: fileName.replace('.md', '.html'),
+          content,
+        });
+      }
+      resolve();
+    }));
+  }
 }
 
 function parseTokens(tokens) {
@@ -89,6 +111,7 @@ function parseProgramBody(programBody) {
 
       const newClass = {
         name: node.id.name,
+        outputfileName: `${node.id.name}.html`,
         ...parseLeadingComments(node.leadingComments),
       };
 

@@ -20,7 +20,7 @@ program
     options.globPattern = pattern;
     options.isRecursive = cmdObj.recursive;
     options.readme = path.resolve(cmdObj.readme);
-    options.manuals = path.resolve(cmdObj.manuals);
+    options.manuals = path.resolve(cmdObj.manuals, './**/*.md');
   });
 
 

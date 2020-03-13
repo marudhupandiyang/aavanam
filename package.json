@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./cli/cli.js build -R README.md -M manuals example/**/*.js",
+    "start": "node ./cli/cli.js build -R README.md -M example/manuals example/**/*.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
@@ -20,5 +20,8 @@
     "ejs": "^3.0.1",
     "glob": "^7.1.6",
     "marked": "^0.8.0"
+  },
+  "devDependencies": {
+    "serve": "^11.3.0"
   }
 }
