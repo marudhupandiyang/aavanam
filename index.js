@@ -158,15 +158,13 @@ function parseProgramBody(programBody) {
 
 function parseMemebers(node) {
   const classBodyNodes = node.body.body
-  const value = {};
+  const value = [];
 
   classBodyNodes.forEach(n => {
     const nValue = {};
     nValue.name = n.key.name;
     nValue.params = (n.params || []).map(p => p.name);
-    if (n.kind === Constants.Node.Constructor) {
-      value.constructor = nValue;
-    }
+    value.push(nValue);
   });
   return { methods: value };
 }

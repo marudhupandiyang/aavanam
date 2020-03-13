@@ -28,17 +28,15 @@
           <%= currentClass.description %>
         </p>
 
-        <% if (currentClass.methods.constructor) { %>
-          <%- include('partial/summary-table', {
-            title: 'Constructor',
-            tableTitle: 'Public Constructor',
-            columns: [
-              {
-                title: 'Public',
-                value: 'constructor()',
-              }
-            ]
-          }) %>
+        <% if (currentClass.methods && currentClass.methods.length > 0) { %>
+        <h3>Class Methods: </h3>
+          <% for( var i = 0; i < currentClass.methods.length; i +=1 ) { %>
+              <%- include('partial/summary-table', {
+                access: 'public',
+                title: currentClass.methods[i].name,
+                params: currentClass.methods[i].params,
+              }) %>
+          <% }%>
         <% } %>
       </div>
     </div>

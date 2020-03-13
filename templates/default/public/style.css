@@ -3,6 +3,10 @@
   --code-font: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
   --page-font: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
   --page-font-size: 16px;
+  --border-color: #dddddd;
+  --class-public-access: #008000;
+  --class-private-access: #a90505;
+  --class-method-param: #072ec3;
 }
 
 * {
@@ -76,11 +80,11 @@ body {
 
 .content h1, .content h2, .content h3 {
   font-weight: 500;
-  border-bottom: solid 1px #ddd;
+  border-bottom: solid 1px var(--border-color);
 }
 
 .content table {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   margin: 1rem 0;
   border-collapse: collapse;
 }
@@ -96,6 +100,7 @@ body {
 
 .content table td {
   padding: 0.5rem;
+  white-space: nowrap;
 }
 
 .content table tbody tr:nth-child(2n) {
@@ -109,7 +114,7 @@ header {
   z-index: 1;
   background-color: var(--grey-bg-color);
   top: 0;
-  border-bottom: solid 1px #ddd;
+  border-bottom: solid 1px var(--border-color);
   height: 50px;
 }
 
@@ -136,7 +141,7 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: solid 1px #ddd;
+  border-top: solid 1px var(--border-color);
 }
 
 .body-container {
@@ -209,6 +214,7 @@ footer {
 
 .content {
   height: 100%;
+  width: 100%;
   overflow: auto;
   padding: 0rem 2rem;
   font-size: 0.9rem;
@@ -231,6 +237,24 @@ footer {
   content: ' -> ';
 }
 
-.class-detail .content .method table {
-  width: 100%;
+.class-detail .content .method h4 {
+  font-size: 1rem;
+  font-weight: 500;
 }
+
+.class-detail .content .method h4 .access {
+  margin-right: 0.5rem;
+}
+
+.class-detail .content .method h4 .param {
+  color: var(--class-method-param);
+}
+
+.class-detail .content .method h4 .access.public {
+  color: var(--class-public-access);
+}
+
+.class-detail .content .method h4 .access.private {
+  color: var(--class-private-access);
+}
+
