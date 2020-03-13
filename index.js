@@ -161,6 +161,7 @@ function parseMemebers(node) {
   const value = [];
 
   classBodyNodes.forEach(n => {
+    console.dir(n);
     const nValue = {};
     nValue.name = n.key.name;
     nValue.params = (n.params || []).map(p => p.name);
