@@ -25,6 +25,7 @@ function getTemplatePath (template = 'default') {
 function generateMarkdownToHtml(content) {
   return new Promise((resolve, reject) => {
     marked(content, {}, (err, result) => {
+      if (err) { log('Eroor in markdown to html', err); }
       resolve(result);
     });
   });
