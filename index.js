@@ -31,6 +31,9 @@ global.REFRENCE_LINKS = {
 const Constants = {
   ClassDeclaration: 'ClassDeclaration',
   CommentBlock: 'CommentBlock',
+  ClassMethod: 'ClassMethod',
+  ClassProperty: 'ClassProperty',
+  ArrowFunctionExpression: 'ArrowFunctionExpression',
   Tag: {
     desc: 'desc',
     param: 'param',
@@ -168,18 +171,23 @@ function parseProgramBody(programBody) {
         outputfileName: `${node.id.name}.html`,
         ...parseLeadingComments(node.leadingComments),
         ...parseExtends(node),
-        ...parseMemebers(node),
+        ...parseMembers(node),
       };
       classes.push(newClass);
+    } else {
+      // if (node.declaration) {
+      //   console.dir(node.declaration);
+      // }
     }
   });
 
   return classes;
 }
 
-function parseMemebers(node) {
+function parseMembers(node) {
   const classBodyNodes = node.body.body
-  const value = [];
+  const methods = [];
+  const properties = [];
 
   classBodyNodes.forEach(n => {
     const nValue = {
@@ -187,13 +195,22 @@ function parseMemebers(node) {
       params: (n.params || []).map(p => p.name),
       ...parseLeadingComments(n.leadingComments),
     };
-    value.push(nValue);
+    if (n.type === Constants.ClassMethod) {
+      methods.push(nValue);
+    } else if (n.type === Constants.ClassProperty) {
+      if (n.value && n.value.type === Constants.ArrowFunctionExpression) {
+        methods.push(nValue);
+      } else {
+        properties.push(nValue);
+      }
+    }
   });
-  return { methods: value };
+  return { methods, properties };
 }
 
 function parseExtends(node) {
   const value = [];
+  log('Staring with extends');
 
   if (node.superClass) {
     if (node.superClass.object) {
@@ -202,8 +219,10 @@ function parseExtends(node) {
     if (node.superClass.property) {
       value.push(node.superClass.property.name);
     }
+    log('Done with extends');
     return { extends: value };
   }
+  log('Done with extends');
 }
 
 function parseLeadingComments(comments = []) {

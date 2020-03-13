@@ -29,10 +29,22 @@
           <%= currentClass.description %>
         </p>
 
+        <% if (currentClass.properties && currentClass.properties.length > 0) { %>
+        <h3>Class Properties: </h3>
+          <% for( var i = 0; i < currentClass.properties.length; i +=1 ) { %>
+              <%- include('partial/summary-table-class-property', {
+                access: 'public',
+                title: currentClass.properties[i].name,
+                // params: currentClass.properties[i].params,
+                // tags: currentClass.properties[i].tags,
+              }) %>
+          <% }%>
+        <% } %>
+
         <% if (currentClass.methods && currentClass.methods.length > 0) { %>
         <h3>Class Methods: </h3>
           <% for( var i = 0; i < currentClass.methods.length; i +=1 ) { %>
-              <%- include('partial/summary-table', {
+              <%- include('partial/summary-table-class-method', {
                 access: 'public',
                 title: currentClass.methods[i].name,
                 params: currentClass.methods[i].params,
