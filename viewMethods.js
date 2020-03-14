@@ -1,5 +1,5 @@
 function getTypeWithReferenceLink(type = '') {
-  const link = global.REFRENCE_LINKS[type.toLowerCase()];
+  const link = DocGenerator.REFRENCE_LINKS[type.toLowerCase()];
 
   let linkTag = type;
   if (link) {

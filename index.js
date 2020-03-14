@@ -4,11 +4,23 @@ const glob = require("glob");
 const parser = require("@babel/parser");
 const commentParser = require('comment-parser');
 
+String.prototype.count = function(c) {
+  let result = 0;
+  for(let i = 0; i < this.length; i += 1) {
+    if ( this[i] == c) {
+      result += 1;
+    }
+  }
+  return result;
+};
+
+
 require('./docGenerator');
 require('./viewMethods');
 
 const { log } = require('./lib');
 const Doc = require('./doc');
+
 
 const myDoc = new DocGenerator();
 
@@ -24,16 +36,14 @@ function addClass(classDetails, parent) {
   docData.classes[parent].push(classDetails);
 }
 
-global.REFRENCE_LINKS = {
-  'object': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object',
-};
-
 const Constants = {
   ClassDeclaration: 'ClassDeclaration',
   CommentBlock: 'CommentBlock',
   ClassMethod: 'ClassMethod',
   ClassProperty: 'ClassProperty',
   ArrowFunctionExpression: 'ArrowFunctionExpression',
+  GetterMethod: 'get',
+  SetterMethod: 'set',
   Tag: {
     desc: 'desc',
     param: 'param',
@@ -188,36 +198,53 @@ function parseMembers(node) {
   const classBodyNodes = node.body.body
   const methods = [];
   const properties = [];
+  const staticProperties = [];
+  const staticMethods = [];
+  const getterMethods = [];
+  const setterMethods = [];
 
   classBodyNodes.forEach(n => {
+    // console.log(n);
     const nValue = {
       name: n.key.name,
       params: (n.params || []).map(p => p.name),
       ...parseLeadingComments(n.leadingComments),
     };
+
     if (n.type === Constants.ClassMethod) {
-      methods.push(nValue);
+      if (n.static) {
+        staticMethods.push(nValue);
+      } else if (n.kind === Constants.GetterMethod) {
+        getterMethods.push(nValue);
+      } else if (n.kind === Constants.SetterMethod) {
+        setterMethods.push(nValue);
+      } else {
+        methods.push(nValue);
+      }
     } else if (n.type === Constants.ClassProperty) {
       if (n.value && n.value.type === Constants.ArrowFunctionExpression) {
         methods.push(nValue);
+      } else if (n.static) {
+        staticProperties.push(nValue);
       } else {
         properties.push(nValue);
       }
     }
   });
-  return { methods, properties };
+  return { methods, properties, staticMethods, getterMethods, setterMethods, staticProperties };
 }
 
 function parseExtends(node) {
   const value = [];
   log('Staring with extends');
-
+  // console.dir(node);
   if (node.superClass) {
     if (node.superClass.object) {
       value.push(node.superClass.object.name);
-    }
-    if (node.superClass.property) {
+    } else if (node.superClass.property) {
       value.push(node.superClass.property.name);
+    } else if (node.superClass.name) {
+      value.push(node.superClass.name);
     }
     log('Done with extends');
     return { extends: value };
@@ -246,28 +273,31 @@ function parseLeadingComments(comments = []) {
     let parsedComment = commentParser(commentValue, {
       trim: true,
     });
-    parsedComment = parsedComment[0];
 
-    values.subHeading = parsedComment.description;
+    if (parsedComment.length > 0) {
+      parsedComment = parsedComment[0];
 
-    parsedComment.tags.forEach(t => {
-      switch (t.tag) {
-        case Constants.Tag.desc:
-          values.description = `${t.name} ${t.description}`;
-          break;
+      values.subHeading = parsedComment.description;
 
-        case Constants.Tag.param:
-          values.params[t.name] = {
-            type: t.type,
-            desc: t.description,
-          };
-          break;
+      parsedComment.tags.forEach(t => {
+        switch (t.tag) {
+          case Constants.Tag.desc:
+            values.description = `${t.name} ${t.description}`;
+            break;
 
-        default:
-          values.others[t.type] = t.description;
-          break;
-      }
-    });
+          case Constants.Tag.param:
+            values.params[t.name] = {
+              type: t.type,
+              desc: t.description,
+            };
+            break;
+
+          default:
+            values.others[t.type] = t.description;
+            break;
+        }
+      });
+    }
   });
 
   log('Done with leading comments');

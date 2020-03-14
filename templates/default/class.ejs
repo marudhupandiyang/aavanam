@@ -29,6 +29,18 @@
           <%= currentClass.description %>
         </p>
 
+        <% if (currentClass.staticProperties && currentClass.staticProperties.length > 0) { %>
+        <h3>Static Properties: </h3>
+          <% for( var i = 0; i < currentClass.staticProperties.length; i +=1 ) { %>
+              <%- include('partial/summary-table-class-property', {
+                access: 'public',
+                title: currentClass.staticProperties[i].name,
+                // params: currentClass.staticProperties[i].params,
+                // tags: currentClass.staticProperties[i].tags,
+              }) %>
+          <% }%>
+        <% } %>
+
         <% if (currentClass.properties && currentClass.properties.length > 0) { %>
         <h3>Class Properties: </h3>
           <% for( var i = 0; i < currentClass.properties.length; i +=1 ) { %>
@@ -40,6 +52,43 @@
               }) %>
           <% }%>
         <% } %>
+
+        <% if (currentClass.staticMethods && currentClass.staticMethods.length > 0) { %>
+        <h3>Static Methods: </h3>
+          <% for( var i = 0; i < currentClass.staticMethods.length; i +=1 ) { %>
+              <%- include('partial/summary-table-class-method', {
+                access: 'public',
+                title: currentClass.staticMethods[i].name,
+                params: currentClass.staticMethods[i].params,
+                tags: currentClass.staticMethods[i].tags,
+              }) %>
+          <% }%>
+        <% } %>
+
+        <% if (currentClass.getterMethods && currentClass.getterMethods.length > 0) { %>
+        <h3>Class Getters: </h3>
+          <% for( var i = 0; i < currentClass.getterMethods.length; i +=1 ) { %>
+              <%- include('partial/summary-table-class-method', {
+                access: 'public',
+                title: currentClass.getterMethods[i].name,
+                params: currentClass.getterMethods[i].params,
+                tags: currentClass.getterMethods[i].tags,
+              }) %>
+          <% }%>
+        <% } %>
+
+        <% if (currentClass.setterMethods && currentClass.setterMethods.length > 0) { %>
+        <h3>Class Setters: </h3>
+          <% for( var i = 0; i < currentClass.setterMethods.length; i +=1 ) { %>
+              <%- include('partial/summary-table-class-method', {
+                access: 'public',
+                title: currentClass.setterMethods[i].name,
+                params: currentClass.setterMethods[i].params,
+                tags: currentClass.setterMethods[i].tags,
+              }) %>
+          <% }%>
+        <% } %>
+
 
         <% if (currentClass.methods && currentClass.methods.length > 0) { %>
         <h3>Class Methods: </h3>

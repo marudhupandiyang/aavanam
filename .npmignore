@@ -1,0 +1,6 @@
+example
+.gitignore
+output
+.npmignore
+bundle.js
+doc.js
