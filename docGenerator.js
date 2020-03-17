@@ -1,97 +1,60 @@
 const path = require('path');
 const copyfiles = require('copyfiles');
+const log = require('debug')('aavanam:docGenerator');
 
 const FileHelper = require('./fileHelper');
 
-const DEFAULT_OUTPUT_PATH = path.resolve(__dirname, './templates/default');
+const DEFAULT_TEMPLATE_PATH = path.resolve(__dirname, './templates/default');
+const MANUAL_OUTPUT_PATH = 'manual';
 
 class DocGenerator {
-  constructor() {
-    this.templatePath = DEFAULT_OUTPUT_PATH;
-    this.options = {};
-    this.classes = {};
-    this.manuals = [];
-
-    this.addClass = this.addClass.bind(this);
-    this.addManuals = this.addManuals.bind(this);
-    this.setHomeFile = this.setHomeFile.bind(this);
-    this.setOutputPath = this.setOutputPath.bind(this);
-    this.getOutputPath = this.getOutputPath.bind(this);
-    this.setTemplatePath = this.setTemplatePath.bind(this);
-    this.getTemplatePath = this.getTemplatePath.bind(this);
-    this.generateHomePage = this.generateHomePage.bind(this);
-    this.generate = this.generate.bind(this);
-    this.getRelativePath = this.getRelativePath.bind(this);
-  }
-
-  addClass(classObj) {
-    this.classes[classObj.parent] = this.classes[classObj.parent] || [];
-    this.classes[classObj.parent].push(classObj);
-  }
-
-  addManuals(manuals, manualsPath) {
-    let newManuals = [];
-    if (manuals instanceof Array) {
-      newManuals = manuals;
-    } else {
-      newManuals = [manuals];
+  constructor(result) {
+    if (!result) {
+      throw 'Data is required to initialize doc generator';
     }
 
-    this.manualsPath = manualsPath;
-    this.manuals = [
-      ...this.manuals,
-      ...newManuals,
-    ];
-  }
+    Object.keys(result).map((k) => {
+      this[k] = result[k];
+    });
 
-  setConfig(options) {
-    this.options = options;
-  }
-
-  setHomeFile(filePath) {
-    this.homeFilePath = filePath;
-  }
-
-  setOutputPath(filePath) {
-    this.outputPath = filePath;
+    this.templatePath = this.templatePath || DEFAULT_TEMPLATE_PATH;
   }
 
   getOutputPath(filePath, extension = '.html') {
-    return `${this.outputPath}/${filePath}${extension}`;
-  }
-
-  setTemplatePath(filePath) {
-    this.templatePath = filePath || DEFAULT_OUTPUT_PATH;
+    return path.resolve(this.outputPath, `${filePath}${extension}`);
   }
 
   getTemplatePath(template, extension = '.ejs') {
-    return `${this.templatePath}/${template}${extension}`;
+    return path.resolve(this.templatePath, `${template}${extension}`);
   }
 
   getRelativePath(filePath) {
-    return filePath.replace(`${this.outputPath}`, '');
+    return path.relative(this.outputPath, filePath);
   }
 
   async generateHomePage() {
-    const fileContent = await FileHelper.readMarkdownFileAsHtml(this.homeFilePath);
-    await FileHelper.renderTemplate({
-      outputPath: this.getOutputPath('index'),
-      templatePath: this.getTemplatePath('index'),
-      data: {
-        content: fileContent,
-      },
+    return new Promise(async (resolve, reject) => {
+      const fileContent = await FileHelper.readMarkdownFileAsHtml(this.homeFilePath);
+      await FileHelper.renderTemplate({
+        outputPath: this.getOutputPath('index'),
+        templatePath: this.getTemplatePath('index'),
+        data: {
+          content: fileContent,
+        },
+      });
+      resolve();
     });
   }
 
   async prepare() {
-    const classes = { ...this.classes };
-    const folders = Object.keys(classes);
+    const files = { ...this.files };
+    const folders = Object.keys(files);
     for (let folderI = 0; folderI < folders.length; folderI += 1) {
-      const currentClasses = classes[folders[folderI]];
+      const currentClasses = files[folders[folderI]].classes;
       for (let currentClassI = 0; currentClassI < currentClasses.length; currentClassI += 1) {
         const currentClass = {
           ...currentClasses[currentClassI],
-          pageTitle: `${currentClasses.name} Manual | ${this.options.title}`,
+          pageTitle: `${currentClasses.name} Manual | ${this.title}`,
         };
 
         currentClass.outputPath = this.getOutputPath(`${folders[folderI]}/classes/${currentClass.name}`);
@@ -101,7 +64,7 @@ class DocGenerator {
     }
 
     return {
-      classes,
+      files,
       manuals: await this.prepareManuals(),
     };
   }
@@ -113,25 +76,26 @@ class DocGenerator {
     for(let i = 0; i < this.manuals.length; i += 1) {
       const newManual = {
         name: path.basename(this.manuals[i], '.md'),
-        content: await FileHelper.readFile(this.manuals[i]),
-        pageTitle: `${this.manuals[i].name} Manual | ${this.options.title}`,
+        sourceFilePath: this.manuals[i],
+        sourceFileType: 'markdown',
       };
-      newManual.outputPath = this.getOutputPath(`manuals/${newManual.name}`);
+
+      newManual.pageTitle = `${newManual.name} Manual | ${this.title}`,
+      newManual.outputPath = this.getOutputPath(`${MANUAL_OUTPUT_PATH}/${newManual.name}`);
       newManual.relativePath = this.getRelativePath(newManual.outputPath);
       manuals.push(newManual);
 
-      if (!hasIndex && newManual.name === 'index') {
         hasIndex = true;
       }
-    }
 
     if (manuals.length && !hasIndex) {
       const manualIndex = {
         name: 'index',
-        content: await FileHelper.readFile(this.homeFilePath),
-        pageTitle: `Manuals | ${this.options.title}`,
+        sourceFilePath: this.homeFilePath,
+        sourceFileType: 'markdown',
+        pageTitle: `Manuals | ${this.title}`,
       };
-      manualIndex.outputPath = this.getOutputPath(`manuals/${manualIndex.name}`);
+      manualIndex.outputPath = this.getOutputPath(`${MANUAL_OUTPUT_PATH}/${manualIndex.name}`);
       manualIndex.relativePath = this.getRelativePath(manualIndex.outputPath);
       manuals.push(manuals);
     }
@@ -143,23 +107,23 @@ class DocGenerator {
     const manuals = viewVariables.manuals;
     return new Promise(async (resolve, reject) => {
       for (let i = 0; i < manuals.length; i += 1) {
+        log('Generating manual', manuals[i].name);
         const currentManual = manuals[i];
-        const fileContent = await FileHelper.readMarkdownAsHtml(currentManual.content);
         await FileHelper.renderTemplate({
           ...currentManual,
           templatePath: this.getTemplatePath('manual'),
           data: {
             manuals,
-            content: fileContent,
+            currentManual,
           },
         });
       }
 
       if (manuals.length) {
-        const sourcePath = path.resolve(this.manualsPath, 'asset/**/*');
+        log('copying assets for manuals');
+        const sourcePath = path.resolve(this.manualPath, 'asset/**/*');
         const destinationPath = this.getOutputPath('manuals', '');
-        console.log('aa', this.manualsPath, this.manualsPath.count('/'));
-        copyfiles([sourcePath, destinationPath], { up: this.manualsPath.count('/') + 1}, async (err) => {
+        copyfiles([sourcePath, destinationPath], { up: this.manualPath.count('/') + 1}, async (err) => {
           resolve();
         });
       } else {
@@ -169,16 +133,16 @@ class DocGenerator {
   }
 
   async generateClasses() {
-    const classes = viewVariables.classes;
+    const files = viewVariables.files;
     return new Promise(async (resolve, reject) => {
-      const folders = Object.keys(classes);
+      const folders = Object.keys(files);
 
       for (let folderI = 0; folderI < folders.length; folderI += 1) {
-        const currentClasses = classes[folders[folderI]];
+        const currentClasses = files[folders[folderI]].classes;
         for (let currentClassI = 0; currentClassI < currentClasses.length; currentClassI += 1) {
           const currentClass = currentClasses[currentClassI];
           await FileHelper.renderTemplate({
-            outputPath: currentClass.outputPath,
+            ...currentClass,
             templatePath: this.getTemplatePath('class'),
             data: {
               currentClass
@@ -198,9 +162,11 @@ class DocGenerator {
       console.warn('HomeFile path not set');
     }
 
+    FileHelper.makeDirectoryForFilePath(this.outputPath);
+
     const data = await this.prepare();
     global.viewVariables = {
-      pageTitle: this.options.title,
+      pageTitle: this.title,
       classes: this.classes,
       content: '',
       ...data,
@@ -209,9 +175,9 @@ class DocGenerator {
     const publicPath = `${this.templatePath}/public/**`;
     copyfiles([publicPath, this.outputPath], { up: this.templatePath.count('/') + 1 }, async () => {
 
-      this.generateManuals();
-      this.generateHomePage();
-      this.generateClasses();
+      await this.generateHomePage();
+      await this.generateManuals();
+      await this.generateClasses();
     });
   }
 }

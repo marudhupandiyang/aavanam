@@ -1,10 +1,12 @@
 <div class="left-menu">
   <ul>
-    <% var classFolders = Object.keys(classes); %>
-    <% for(var j = 0; j < classFolders.length; j +=1) {%>
-      <h4><%= classFolders[j] %></h4>
-      <% for(var i = 0; i < classes[classFolders[j]].length; i += 1) { %>
-        <% var cClass = classes[classFolders[j]][i]; %>
+    <% var fileNames = Object.keys(files); %>
+    <% for(var j = 0; j < fileNames.length; j +=1) {%>
+      <h4><%= fileNames[j] %></h4>
+      <% var currentObj = files[fileNames[j]] %>
+
+      <% for(var i = 0; i < currentObj.classes.length; i += 1) { %>
+        <% var cClass = currentObj.classes[i]; %>
         <li>
           <a href="<%= cClass.relativePath %>">
             <span class="list-indicator class">C</span>

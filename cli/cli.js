@@ -16,9 +16,11 @@ program
   .option('-M, --manuals [value]', 'Manuals(.md files) dir path')
   .option('-O, --output [value]', 'Output dir path')
   .option('-S, --source [value]', 'Input glob pattern')
+  .option('-D, --rootdirectory [value]', 'Root directory for source. If ignored, current directory is defaulted')
   .version(pacakge.version)
   .description(pacakge.description)
   .action(function(pattern, cmdObj) {
+    options.rootDirectory = path.resolve(cmdObj.rootdirectory || '.');
     options.globPattern = path.resolve(pattern || cmdObj.source);
     options.isRecursive = cmdObj.recursive;
     options.readme = path.resolve(cmdObj.readme);

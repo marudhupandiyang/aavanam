@@ -6,8 +6,8 @@
     <%= title %>
     (<%- params.map(p => {
       const v = [`<span class="param">${p}</span>`];
-      if (tags && tags.params[p]) {
-        v.push(`:&nbsp;${view.getTypeWithReferenceLink(tags.params[p].type)}`);
+      if (tags && tags.params && tags.params[p.name]) {
+        v.push(`:&nbsp;${view.getTypeWithReferenceLink(tags.params[p.name].type)}`);
       }
       return v.join('');
     }) %>)
