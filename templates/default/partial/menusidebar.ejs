@@ -1,23 +1,5 @@
 <div class="left-menu">
   <ul>
-    <li>
-      <a href="/index.html">
-        <span class="list-indicator index">H</span>
-        Index
-      </a>
-    </li>
-
-    <h3>Manuals</h3>
-    <% for(var i=0; i < manuals.length; i += 1) { %>
-      <li>
-        <a href="<%= manuals[i].relativePath %>">
-          <span class="list-indicator manual">M</span>
-          <%= manuals[i].name %>
-        </a>
-      </li>
-    <% } %>
-
-    <h3>Classes</h3>
     <% var classFolders = Object.keys(classes); %>
     <% for(var j = 0; j < classFolders.length; j +=1) {%>
       <h4><%= classFolders[j] %></h4>

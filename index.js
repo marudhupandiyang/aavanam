@@ -1,4 +1,4 @@
-// const path = require('path');
+const path = require('path');
 const fs = require('fs');
 const glob = require("glob");
 const parser = require("@babel/parser");
@@ -63,8 +63,8 @@ const parseOptions = {
 
 async function aavanam(options) {
   const finalSourcesList = glob.sync(options.globPattern);
-
-  options.manuals = glob.sync(options.manuals);
+  console.dir(finalSourcesList);
+  const manuals = glob.sync(path.resolve(options.manualPath, './**/*.md'));
 
   myDoc.setConfig({
     title: 'Test',
@@ -72,7 +72,7 @@ async function aavanam(options) {
   myDoc.setTemplatePath(options.templatePath);
   myDoc.setOutputPath(options.outputPath);
   myDoc.setHomeFile(options.readme);
-  myDoc.addManuals(options.manuals);
+  myDoc.addManuals(manuals, options.manualPath);
 
   docData.outputPath = options.outputPath;
 
@@ -97,7 +97,9 @@ async function aavanam(options) {
       log('Found tokens');
       const classes = await parseTokens(tokens);
 
+      log('Found classes', classes);
       classes.forEach(c => {
+        console.log(`Processing class`, c.name);
         const fileName = currentFile.substr(currentFile.lastIndexOf('/') + 1);
         let filePath = currentFile.replace(`/${fileName}`, '').replace(options.basePath, '');
         if (filePath[0] === '/') {
@@ -157,7 +159,7 @@ function parseManuals(options) {
 }
 
 function parseTokens(tokens) {
-  log('Parsing found tokens');
+  log('Parsing found tokens', tokens);
   return parseProgram(tokens.program);
 }
 

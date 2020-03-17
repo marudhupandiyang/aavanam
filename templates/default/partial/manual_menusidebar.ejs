@@ -1,0 +1,13 @@
+<div class="left-menu">
+  <ul>
+    <% for(var i = 0; i < manuals.length; i += 1) { %>
+      <% if (manuals[i].name !== 'index') { %>
+        <li>
+          <a href="<%= manuals[i].relativePath %>">
+            <%= manuals[i].name %>
+          </a>
+        </li>
+      <% } %>
+    <% } %>
+  </ul>
+</div>

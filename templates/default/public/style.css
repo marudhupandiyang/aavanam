@@ -7,11 +7,18 @@
   --class-public-access: #008000;
   --class-private-access: #a90505;
   --class-method-param: #2c3868;
+  --link-color: #039BE5;
 }
 
 * {
   box-sizing: border-box;
 }
+
+a {
+  color: #039BE5;
+  text-decoration: none;
+}
+
 
 body {
   font-size: var(--page-font-size);
@@ -30,7 +37,7 @@ body {
 
 .content a,
 .content a:visited {
-  color: #0366d6;
+  color: var(--link-color);
   text-decoration: none;
 }
 
@@ -46,6 +53,11 @@ body {
   background-color: #f6f8fa;
   border-radius: 3px;
   font-family: var(--code-font);
+}
+
+.content p,
+.content li {
+  line-height: 1.5;
 }
 
 .content p code,
@@ -80,7 +92,7 @@ body {
 }
 
 .content h1, .content h2, .content h3 {
-  font-weight: 500;
+  font-weight: 600;
   border-bottom: solid 1px var(--border-color);
 }
 
@@ -116,19 +128,27 @@ header {
   background-color: var(--grey-bg-color);
   top: 0;
   border-bottom: solid 1px var(--border-color);
-  height: 50px;
-}
-
-header .logo {
+  height: 40px;
   display: flex;
-  width: 100%;
-  padding: 0.5rem;
-  text-decoration: none;
   align-items: center;
 }
 
+header a,
+header a:visited {
+  display: inline-flex;
+  padding: 0.5rem;
+  text-decoration: none;
+  align-items: center;
+  color: inherit;
+}
+
+header a:focus,
+header a:active {
+  color: var(--link-color);
+}
+
 header .logo img {
-  width: 35px;
+  width: 100px;
 }
 
 header .logo .title {
@@ -172,6 +192,7 @@ footer {
   list-style-position: inside;
   list-style-type: none;
   line-height: 2;
+  line-height: 1.5;
 }
 
 .left-menu ul li a,
@@ -217,7 +238,7 @@ footer {
   height: 100%;
   width: 100%;
   overflow: auto;
-  padding: 0rem 2rem;
+  padding: 0rem 1rem;
   font-size: 0.9rem;
 }
 

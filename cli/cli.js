@@ -22,7 +22,8 @@ program
     options.globPattern = path.resolve(pattern || cmdObj.source);
     options.isRecursive = cmdObj.recursive;
     options.readme = path.resolve(cmdObj.readme);
-    options.manuals = path.resolve(cmdObj.manuals, './**/*.md');
+    options.manualPath = path.resolve(cmdObj.manuals);
+    // options.manuals = path.resolve(cmdObj.manuals, './**/*.md');
     options.outputPath = path.resolve(cmdObj.output || './output');
   });
 

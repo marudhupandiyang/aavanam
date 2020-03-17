@@ -29,7 +29,7 @@ class DocGenerator {
     this.classes[classObj.parent].push(classObj);
   }
 
-  addManuals(manuals) {
+  addManuals(manuals, manualsPath) {
     let newManuals = [];
     if (manuals instanceof Array) {
       newManuals = manuals;
@@ -37,6 +37,7 @@ class DocGenerator {
       newManuals = [manuals];
     }
 
+    this.manualsPath = manualsPath;
     this.manuals = [
       ...this.manuals,
       ...newManuals,
@@ -55,16 +56,16 @@ class DocGenerator {
     this.outputPath = filePath;
   }
 
-  getOutputPath(filePath) {
-    return `${this.outputPath}/${filePath}.html`;
+  getOutputPath(filePath, extension = '.html') {
+    return `${this.outputPath}/${filePath}${extension}`;
   }
 
   setTemplatePath(filePath) {
     this.templatePath = filePath || DEFAULT_OUTPUT_PATH;
   }
 
-  getTemplatePath(template) {
-    return `${this.templatePath}/${template}.ejs`;
+  getTemplatePath(template, extension = '.ejs') {
+    return `${this.templatePath}/${template}${extension}`;
   }
 
   getRelativePath(filePath) {
@@ -83,18 +84,6 @@ class DocGenerator {
   }
 
   async prepare() {
-    const manuals = [];
-    for(let i = 0; i < this.manuals.length; i += 1) {
-      const newManual = {
-        name: path.basename(this.manuals[i], '.md'),
-        content: await FileHelper.readFile(this.manuals[i]),
-        pageTitle: `${this.manuals[i].name} Manual | ${this.options.title}`,
-      };
-      newManual.outputPath = this.getOutputPath(`manuals/${newManual.name}`);
-      newManual.relativePath = this.getRelativePath(newManual.outputPath);
-      manuals.push(newManual);
-    }
-
     const classes = { ...this.classes };
     const folders = Object.keys(classes);
     for (let folderI = 0; folderI < folders.length; folderI += 1) {
@@ -112,9 +101,42 @@ class DocGenerator {
     }
 
     return {
-      manuals,
       classes,
+      manuals: await this.prepareManuals(),
     };
+  }
+
+  async prepareManuals() {
+    const manuals = [];
+    let hasIndex = false;
+
+    for(let i = 0; i < this.manuals.length; i += 1) {
+      const newManual = {
+        name: path.basename(this.manuals[i], '.md'),
+        content: await FileHelper.readFile(this.manuals[i]),
+        pageTitle: `${this.manuals[i].name} Manual | ${this.options.title}`,
+      };
+      newManual.outputPath = this.getOutputPath(`manuals/${newManual.name}`);
+      newManual.relativePath = this.getRelativePath(newManual.outputPath);
+      manuals.push(newManual);
+
+      if (!hasIndex && newManual.name === 'index') {
+        hasIndex = true;
+      }
+    }
+
+    if (manuals.length && !hasIndex) {
+      const manualIndex = {
+        name: 'index',
+        content: await FileHelper.readFile(this.homeFilePath),
+        pageTitle: `Manuals | ${this.options.title}`,
+      };
+      manualIndex.outputPath = this.getOutputPath(`manuals/${manualIndex.name}`);
+      manualIndex.relativePath = this.getRelativePath(manualIndex.outputPath);
+      manuals.push(manuals);
+    }
+
+    return manuals;
   }
 
   async generateManuals() {
@@ -127,9 +149,21 @@ class DocGenerator {
           ...currentManual,
           templatePath: this.getTemplatePath('manual'),
           data: {
+            manuals,
             content: fileContent,
           },
         });
+      }
+
+      if (manuals.length) {
+        const sourcePath = path.resolve(this.manualsPath, 'asset/**/*');
+        const destinationPath = this.getOutputPath('manuals', '');
+        console.log('aa', this.manualsPath, this.manualsPath.count('/'));
+        copyfiles([sourcePath, destinationPath], { up: this.manualsPath.count('/') + 1}, async (err) => {
+          resolve();
+        });
+      } else {
+        resolve();
       }
     });
   }
@@ -164,12 +198,12 @@ class DocGenerator {
       console.warn('HomeFile path not set');
     }
 
-    const data = this.prepare();
+    const data = await this.prepare();
     global.viewVariables = {
       pageTitle: this.options.title,
       classes: this.classes,
       content: '',
-      ...(await data),
+      ...data,
     };
 
     const publicPath = `${this.templatePath}/public/**`;
