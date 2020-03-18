@@ -1,15 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const glob = require("glob");
-const parser = require("@babel/parser");
-
-const babylon = require("babylon");
-const traverse = require("babel-traverse");
-const t = require("babel-types");
-
-const commentParser = require('comment-parser');
-
-const FileHelper = require('./fileHelper');
+const log = require('debug')('aavanam');
 
 String.prototype.count = function(c) {
   let result = 0;
@@ -23,9 +15,7 @@ String.prototype.count = function(c) {
 
 require('./docGenerator');
 require('./viewMethods');
-
-const log = require('debug')('aavanam');
-// const Doc = require('./doc');
+const { parseFile } = require('./parser');
 
 const docData = {
   standardFiles: {},
@@ -56,94 +46,7 @@ const Constants = {
   }
 };
 
-const parseOptions = {
-  sourceType: 'module',
-  plugins: [
-    'jsx',
-    'classProperties',
-  ],
-};
 
-async function parseFile(filePath) {
-  log('Reading file');
-  const fileContent = await FileHelper.readFile(filePath);
-
-  const result = {
-    classes: [],
-    methods: [],
-    staticMethods: [],
-    properties: [],
-    staticProperties: [],
-  };
-
-  log('Parse file to ast');
-  const ast = babylon.parse(fileContent, parseOptions);
-
-
-  traverse.default(ast, {
-    enter(path) {
-      // console.dir(path.node.type);
-    },
-    FunctionDeclaration: function(path) {
-       // path.node.id.name = "x";
-    },
-    ClassDeclaration: function(path) {
-      var currentClass = {
-        path: filePath,
-        name: path.node.id.name,
-        staticMethods: [],
-        methods: [],
-        properties: [],
-        staticProperties: [],
-        constructor: null,
-        leadingComments: path.node.leadingComments || [],
-        tags: {},
-      };
-
-      // result.classes[] =
-      // push the current class to the final result.
-      result.classes.push(currentClass);
-
-      path.traverse({
-        enter(path) {
-          // console.log('c', path.node.type, path.node.name);
-          // console.dir(path.node);
-        },
-        ClassMethod: function(path) {
-          const currentMethod = {
-            name: path.node.key.name,
-            params: path.node.params.map(p => ({ name: p.name })),
-            tags: {},
-            leadingComments: path.node.leadingComments || [],
-          };
-
-          if (path.node.kind === 'constructor') {
-            currentClass.constructor = currentMethod;
-          } else if (path.node.static) {
-            currentClass.staticMethods.push(currentMethod);
-          } else {
-           currentClass.methods.push(currentMethod);
-          }
-        },
-        ClassProperty: function(path) {
-          console.log('processing class property');
-          const currentProperty = {
-            name: path.node.id.name,
-            tags: {},
-            leadingComments: path.node.leadingComments || [],
-          };
-
-          if (path.node.static) {
-            currentClass.staticProperties.push(currentProperty);
-          } else {
-           currentClass.properties.push(currentProperty);
-          }
-        }
-      });
-    },
-  });
-  return result;
-}
 
 async function aavanam(options) {
   const allFiles = glob.sync(options.globPattern);
