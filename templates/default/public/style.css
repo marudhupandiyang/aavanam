@@ -8,6 +8,8 @@
   --class-private-access: #a90505;
   --class-method-param: #2c3868;
   --link-color: #039BE5;
+  --body-color: #555;
+  --grey-bg-highlight-color: #f0f0f0;
 }
 
 * {
@@ -29,6 +31,7 @@ body {
   display: flex;
   flex-direction: column;
   font-family: var(--page-font);
+  color: var(--body-color);
 }
 
 .content {
@@ -272,6 +275,10 @@ footer {
 .class-detail .content .method h4 {
   font-size: 1rem;
   font-weight: 500;
+  margin: 1rem 0;
+  background: var(--grey-bg-highlight-color);
+  padding: 0.3rem 0.5rem;
+  font-style: italic;
 }
 
 .class-detail .content .method h4 .access {
@@ -292,5 +299,4 @@ footer {
 
 .class-detail .content .method .description {
   margin: 0.5rem 1rem;
-  font-size: 0.9em;
 }

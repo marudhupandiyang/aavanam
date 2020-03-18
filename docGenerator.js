@@ -54,9 +54,8 @@ class DocGenerator {
       for (let currentClassI = 0; currentClassI < currentClasses.length; currentClassI += 1) {
         const currentClass = {
           ...currentClasses[currentClassI],
-          pageTitle: `${currentClasses.name} Manual | ${this.title}`,
         };
-
+        currentClass.pageTitle = `${currentClass.name} Class | ${this.title}`;
         currentClass.outputPath = this.getOutputPath(`${folders[folderI]}/classes/${currentClass.name}`);
         currentClass.relativePath = this.getRelativePath(currentClass.outputPath);
         currentClasses[currentClassI] = currentClass;
@@ -184,11 +183,15 @@ class DocGenerator {
 
 DocGenerator.REFRENCE_LINKS = {
   'object': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object',
+  'object[]': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object',
   'string': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String',
+  'string[]': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String',
   'function': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function',
   'boolean': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean',
+  'boolean[]': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean',
   'symbol': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol',
   'number': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number',
+  'number[]': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number',
   'bigint': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt',
   'math': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math',
   'date': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
@@ -202,4 +205,4 @@ DocGenerator.REFRENCE_LINKS = {
   'arguments': 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments',
 };
 
-global.DocGenerator = DocGenerator;
+module.exports = DocGenerator;

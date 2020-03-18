@@ -1,3 +1,5 @@
+const DocGenerator = require('./docGenerator');
+
 function getTypeWithReferenceLink(type = '') {
   const link = DocGenerator.REFRENCE_LINKS[type.toLowerCase()];
 

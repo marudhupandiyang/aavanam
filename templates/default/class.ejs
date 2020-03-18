@@ -16,19 +16,26 @@
           <div class="extends">
             <div class="title">Extends:</div>
             <div class="content">
-              <% currentClass.extends.forEach(function(e) { %>
-                <span><%= e %></span>
-              <% }) %>
+              <span><%= currentClass.extends.name %></span>
             </div>
           </div>
         <% } %>
-        <p class="sub-heading">
-          <%= currentClass.subHeading %>
-        </p>
-        <p class="description">
-          <%= currentClass.description %>
-        </p>
 
+        <% if (currentClass.tags.subHeading) { %>
+          <p class="sub-heading">
+            <%- currentClass.tags.subHeading %>
+          </p>
+        <% } %>
+        <% if (currentClass.tags.description) { %>
+          <p class="description">
+            <%- currentClass.tags.description %>
+          </p>
+        <% } %>
+        <% if (currentClass.tags.todo) { %>
+          <p class="description">
+            <b>Todo:</b> <%- currentClass.tags.todo %>
+          </p>
+        <% } %>
 
         <% if (currentClass.staticProperties && currentClass.staticProperties.length > 0) { %>
         <h3>Static Properties: </h3>
@@ -92,7 +99,7 @@
 
 
         <% if (currentClass.methods && currentClass.methods.length > 0) { %>
-        <h3>Class Methods: </h3>
+        <h3>Methods: </h3>
           <% for( var i = 0; i < currentClass.methods.length; i +=1 ) { %>
               <%- include('partial/summary-table-class-method', {
                 access: 'public',

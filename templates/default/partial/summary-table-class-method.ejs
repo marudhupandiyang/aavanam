@@ -5,18 +5,18 @@
     </span>
     <%= title %>
     (<%- params.map(p => {
-      const v = [`<span class="param">${p}</span>`];
+      const v = [`<span class="param">${p.name}</span>`];
       if (tags && tags.params && tags.params[p.name]) {
         v.push(`:&nbsp;${view.getTypeWithReferenceLink(tags.params[p.name].type)}`);
       }
       return v.join('');
     }) %>)
-    <% if (tags.subHeading || tags.description) { %>
-      <div class="description">
-        <%= tags.subHeading %>
-        <%- (tags.subHeading ? '<br />' : '') %>
-        <%= tags.description %>
-      </div>
-    <% } %>
   </h4>
+  <div class="desc">
+    <% if (tags.subHeading || tags.description) { %>
+      <%- tags.subHeading %>
+      <%- (tags.subHeading ? '<br />' : '') %>
+      <%- tags.description %>
+    <% } %>
+  </div>
 </div>
