@@ -15,6 +15,7 @@ async function aavanam(options) {
   const result = {
     title: 'Test',
     files: {},
+    gitRepoLink: options.gitRepoLink,
     templatePath: options.templatePath,
     outputPath: options.outputPath,
     homeFilePath: options.readme,

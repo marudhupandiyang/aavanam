@@ -16,7 +16,7 @@
           <div class="extends">
             <div class="title">Extends:</div>
             <div class="content">
-              <span><%= currentClass.extends.name %></span>
+              <a href="#"><%= currentClass.extends.name %></a>
             </div>
           </div>
         <% } %>
@@ -31,18 +31,35 @@
             <%- currentClass.tags.description %>
           </p>
         <% } %>
+
         <% if (currentClass.tags.todo) { %>
           <p class="description">
             <b>Todo:</b> <%- currentClass.tags.todo %>
           </p>
         <% } %>
+        <% if (currentClass.tags.example) { %>
+          <p class="example">
+            <h4>Example:</h4>
+            <pre><%= currentClass.tags.example %></pre>
+          </p>
+        <% } %>
+
+        <% if (currentClass.constructor) { %>
+          <h4>Constructor Summary</h4>
+          <%- include('partial/summary-table-class-method', {
+            access: 'public',
+            sectionTitle: 'Public Constructor',
+            methods: [currentClass.constructor],
+          }) %>
+        <% } %>
 
         <% if (currentClass.staticProperties && currentClass.staticProperties.length > 0) { %>
-        <h3>Static Properties: </h3>
+        <h4>Static Properties: </h4>
           <% for( var i = 0; i < currentClass.staticProperties.length; i +=1 ) { %>
               <%- include('partial/summary-table-class-property', {
                 access: 'public',
                 title: currentClass.staticProperties[i].name,
+                sectionTitle: 'Static Public Properties',
                 // params: currentClass.staticProperties[i].params,
                 // tags: currentClass.staticProperties[i].tags,
               }) %>
@@ -61,54 +78,97 @@
           <% }%>
         <% } %>
 
-        <% if (currentClass.staticMethods && currentClass.staticMethods.length > 0) { %>
-        <h3>Static Methods: </h3>
-          <% for( var i = 0; i < currentClass.staticMethods.length; i +=1 ) { %>
+        <% if ((currentClass.getterPublicMethods && currentClass.getterPublicMethods.length > 0) || (currentClass.getterPrivateMethods && currentClass.getterPrivateMethods.length > 0)) {%>
+          <h3>Getter Summary: </h3>
+        <% } %>
+
+        <% if (currentClass.getterPublicMethods && currentClass.getterPublicMethods.length > 0) { %>
+          <% for( var i = 0; i < currentClass.getterPublicMethods.length; i +=1 ) { %>
               <%- include('partial/summary-table-class-method', {
-                access: 'public',
-                title: currentClass.staticMethods[i].name,
-                params: currentClass.staticMethods[i].params,
-                tags: currentClass.staticMethods[i].tags,
+                access: 'public get',
+                sectionTitle: 'Public Members',
+                noArguments: true,
+                methods: currentClass.getterPublicMethods,
               }) %>
           <% }%>
         <% } %>
 
-        <% if (currentClass.getterMethods && currentClass.getterMethods.length > 0) { %>
-        <h3>Class Getters: </h3>
-          <% for( var i = 0; i < currentClass.getterMethods.length; i +=1 ) { %>
+        <% if (currentClass.getterPrivateMethods && currentClass.getterPrivateMethods.length > 0) { %>
+          <% for( var i = 0; i < currentClass.getterPrivateMethods.length; i +=1 ) { %>
               <%- include('partial/summary-table-class-method', {
-                access: 'public',
-                title: currentClass.getterMethods[i].name,
-                params: currentClass.getterMethods[i].params,
-                tags: currentClass.getterMethods[i].tags,
+                access: 'private get',
+                sectionTitle: 'Private Members',
+                noArguments: true,
+                methods: currentClass.getterPrivateMethods,
               }) %>
           <% }%>
         <% } %>
 
-        <% if (currentClass.setterMethods && currentClass.setterMethods.length > 0) { %>
-        <h3>Class Setters: </h3>
-          <% for( var i = 0; i < currentClass.setterMethods.length; i +=1 ) { %>
+        <% if ((currentClass.setterPublicMethods && currentClass.setterPublicMethods.length > 0) || (currentClass.setterPrivateMethods && currentClass.setterPrivateMethods.length > 0)) {%>
+          <h3>Setter Summary: </h3>
+        <% } %>
+
+        <% if (currentClass.setterPublicMethods && currentClass.setterPublicMethods.length > 0) { %>
+          <% for( var i = 0; i < currentClass.setterPublicMethods.length; i +=1 ) { %>
               <%- include('partial/summary-table-class-method', {
-                access: 'public',
-                title: currentClass.setterMethods[i].name,
-                params: currentClass.setterMethods[i].params,
-                tags: currentClass.setterMethods[i].tags,
+                access: 'public set',
+                sectionTitle: 'Public Members',
+                noArguments: true,
+                methods: currentClass.setterPublicMethods,
               }) %>
           <% }%>
         <% } %>
 
-
-        <% if (currentClass.methods && currentClass.methods.length > 0) { %>
-        <h3>Methods: </h3>
-          <% for( var i = 0; i < currentClass.methods.length; i +=1 ) { %>
+        <% if (currentClass.setterPrivateMethods && currentClass.setterPrivateMethods.length > 0) { %>
+          <% for( var i = 0; i < currentClass.setterPrivateMethods.length; i +=1 ) { %>
               <%- include('partial/summary-table-class-method', {
-                access: 'public',
-                title: currentClass.methods[i].name,
-                params: currentClass.methods[i].params,
-                tags: currentClass.methods[i].tags,
+                access: 'private set',
+                sectionTitle: 'Private Members',
+                noArguments: true,
+                methods: currentClass.setterPrivateMethods,
               }) %>
           <% }%>
         <% } %>
+
+        <% if ((currentClass.staticPublicMethods && currentClass.staticPublicMethods.length > 0) || (currentClass.staticPrivateMethods && currentClass.staticPrivateMethods.length > 0)) { %>
+          <h4>Static Method Summary</h4>
+        <% } %>
+
+        <% if (currentClass.staticPublicMethods && currentClass.staticPublicMethods.length > 0) { %>
+        <%- include('partial/summary-table-class-method', {
+                access: 'public static',
+                sectionTitle: 'Static Public Methods',
+                methods: currentClass.staticPublicMethods,
+              }) %>
+        <% } %>
+
+        <% if (currentClass.staticPrivateMethods && currentClass.staticPrivateMethods.length > 0) { %>
+        <%- include('partial/summary-table-class-method', {
+                access: 'private static',
+                sectionTitle: 'Static Private Methods',
+                methods: currentClass.staticPrivateMethods,
+              }) %>
+        <% } %>
+
+        <% if ((currentClass.publicMethods && currentClass.publicMethods.length > 0) || (currentClass.privateMethods && currentClass.privateMethods.length > 0)) { %>
+          <h4>Method Summary</h4>
+        <% } %>
+        <% if (currentClass.publicMethods && currentClass.publicMethods.length > 0) { %>
+            <%- include('partial/summary-table-class-method', {
+              access: 'public',
+              sectionTitle: 'Public Methods',
+              methods: currentClass.publicMethods,
+            }) %>
+        <% } %>
+
+        <% if (currentClass.privateMethods && currentClass.privateMethods.length > 0) { %>
+            <%- include('partial/summary-table-class-method', {
+              access: 'private',
+              sectionTitle: 'Private Methods',
+              methods: currentClass.privateMethods,
+            }) %>
+        <% } %>
+
       </div>
     </div>
     <%- include('partial/footer') %>

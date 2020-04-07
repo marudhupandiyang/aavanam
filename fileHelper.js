@@ -102,7 +102,7 @@ async function renderTemplate(options) {
           return;
         }
 
-        log('Done rendering ejs', options.outputPath);
+        console.log('Rendering ', options.outputPath);
         saveFile(options.outputPath, renderedHtml);
         resolve();
       },

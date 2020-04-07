@@ -1,22 +1,30 @@
-<div class="method">
-  <h4>
-    <span class="access <%= access %>">
-      <%= access %>
-    </span>
-    <%= title %>
-    (<%- params.map(p => {
-      const v = [`<span class="param">${p.name}</span>`];
-      if (tags && tags.params && tags.params[p.name]) {
-        v.push(`:&nbsp;${view.getTypeWithReferenceLink(tags.params[p.name].type)}`);
-      }
-      return v.join('');
-    }) %>)
-  </h4>
-  <div class="desc">
-    <% if (tags.subHeading || tags.description) { %>
-      <%- tags.subHeading %>
-      <%- (tags.subHeading ? '<br />' : '') %>
-      <%- tags.description %>
+<% var noArguments = noArguments || false %>
+<table class="summary-table">
+  <thead>
+    <tr>
+      <td colspan="2"><%= sectionTitle %></td>
+    </tr>
+  </thead>
+  <tbody>
+    <% for( var i = 0; i < methods.length; i +=1 ) { %>
+    <% var method = methods[i] %>
+    <tr>
+      <td><%= access %></td>
+      <td class="method-name">
+        <a href="#"><%= method.name %></a>
+          <% if (!noArguments) { %>
+            (<%- method.params.map(p => {
+              const v = [`<span class="param">${p.name}</span>`];
+              if (method.tags && method.tags.params && method.tags.params[p.name]) {
+                v.push(`:&nbsp;${view.getTypeWithReferenceLink(method.tags.params[p.name].type)}`);
+              }
+              return v.join('');
+            }).join(', ') %>)
+          <% } %>
+        </h4>
+        <div class="desc"><%- method.tags.subHeading || method.tags.description.trim() %></div>
+      </td>
+    </tr>
     <% } %>
-  </div>
-</div>
+  </tbody>
+</table>

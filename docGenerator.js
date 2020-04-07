@@ -1,6 +1,6 @@
 const path = require('path');
 const copyfiles = require('copyfiles');
-const log = require('debug')('aavanam:docGenerator');
+// const log = require('debug')('aavanam:docGenerator');
 
 const FileHelper = require('./fileHelper');
 
@@ -106,7 +106,7 @@ class DocGenerator {
     const manuals = viewVariables.manuals;
     return new Promise(async (resolve, reject) => {
       for (let i = 0; i < manuals.length; i += 1) {
-        log('Generating manual', manuals[i].name);
+        console.log('Generating manual', manuals[i].name);
         const currentManual = manuals[i];
         await FileHelper.renderTemplate({
           ...currentManual,
@@ -119,9 +119,9 @@ class DocGenerator {
       }
 
       if (manuals.length) {
-        log('copying assets for manuals');
+        console.log('copying assets for manuals');
         const sourcePath = path.resolve(this.manualPath, 'asset/**/*');
-        const destinationPath = this.getOutputPath('manuals', '');
+        const destinationPath = this.getOutputPath('manual', '');
         copyfiles([sourcePath, destinationPath], { up: this.manualPath.count('/') + 1}, async (err) => {
           resolve();
         });
@@ -167,6 +167,7 @@ class DocGenerator {
     global.viewVariables = {
       pageTitle: this.title,
       classes: this.classes,
+      gitRepoLink: this.gitRepoLink,
       content: '',
       ...data,
     };

@@ -10,6 +10,7 @@ const Constants = {
     desc: 'desc',
     param: 'param',
     todo: 'todo',
+    example: 'example',
   },
   Node: {
     Constructor: 'constructor',

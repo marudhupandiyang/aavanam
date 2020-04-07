@@ -1,8 +1,8 @@
 <div class="left-menu">
   <ul>
-    <% var fileNames = Object.keys(files); %>
+    <% var fileNames = Object.keys(files).sort(); %>
     <% for(var j = 0; j < fileNames.length; j +=1) {%>
-      <h4><%= fileNames[j] %></h4>
+      <h4><%= fileNames[j].replace('.', '') %></h4>
       <% var currentObj = files[fileNames[j]] %>
 
       <% for(var i = 0; i < currentObj.classes.length; i += 1) { %>

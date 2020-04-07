@@ -30,8 +30,10 @@ async function parseFile(filePath) {
 async function parseContent(fileContent) {
   const result = {
     classes: [],
-    methods: [],
-    staticMethods: [],
+    publicMethods: [],
+    privateMethods: [],
+    staticPublicMethods: [],
+    staticPrivateMethods: [],
     properties: [],
     staticProperties: [],
   };
@@ -50,10 +52,14 @@ async function parseContent(fileContent) {
       var currentClass = {
         // path: filePath,
         name: path.node.id.name,
-        staticMethods: [],
-        methods: [],
-        getterMethods: [],
-        setterMethods: [],
+        privateMethods: [],
+        publicMethods: [],
+        staticPublicMethods: [],
+        staticPrivateMethods: [],
+        getterPublicMethods: [],
+        getterPrivateMethods: [],
+        setterPublicMethods: [],
+        setterPrivateMethods: [],
         properties: [],
         staticProperties: [],
         constructor: null,
@@ -70,7 +76,6 @@ async function parseContent(fileContent) {
       // result.classes[] =
       // push the current class to the final result.
       result.classes.push(currentClass);
-
       path.traverse({
         enter(path) {
           // console.log('c', path.node.type, path.node.name);
@@ -87,14 +92,29 @@ async function parseContent(fileContent) {
           if (path.node.kind === 'constructor') {
             currentClass.constructor = currentMethod;
           } else if (path.node.kind === 'get') {
-            currentClass.getterMethods.push(currentMethod);
-
+            if (currentMethod.name[0] === '_') {
+              currentClass.getterPrivateMethods.push(currentMethod);
+            } else {
+              currentClass.getterPublicMethods.push(currentMethod);
+            }
           } else if (path.node.kind === 'set') {
-            currentClass.setterMethods.push(currentMethod);
+            if (currentMethod.name[0] === '_') {
+              currentClass.setterPrivateMethods.push(currentMethod);
+            } else {
+              currentClass.setterPublicMethods.push(currentMethod);
+            }
           } else if (path.node.static) {
-            currentClass.staticMethods.push(currentMethod);
+            if (currentMethod.name[0] === '_') {
+              currentClass.staticPrivateMethods.push(currentMethod);
+            } else {
+              currentClass.staticPublicMethods.push(currentMethod);
+            }
           } else {
-           currentClass.methods.push(currentMethod);
+            if (currentMethod.name[0] === '_') {
+             currentClass.privateMethods.push(currentMethod);
+           } else {
+            currentClass.publicMethods.push(currentMethod);
+           }
           }
         },
         ClassProperty: function(path) {
@@ -157,6 +177,10 @@ function parseLeadingComments(comments = []) {
 
           case Constants.Tag.desc:
             values.description = marked(`${t.name} ${t.description}`.trim(), markedOptions);
+            break;
+
+          case Constants.Tag.example:
+            values.example = t.description.trim();
             break;
 
           case Constants.Tag.param:
