@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const copyfiles = require('copyfiles');
 // const log = require('debug')('aavanam:docGenerator');
@@ -22,6 +23,10 @@ class DocGenerator {
 
   getOutputPath(filePath, extension = '.html') {
     return path.resolve(this.outputPath, `${filePath}${extension}`);
+  }
+
+  getSourcePath(filePath, extension = '.html') {
+    return path.resolve(this.outputPath, 'source', `${filePath}${extension}`);
   }
 
   getTemplatePath(template, extension = '.ejs') {
@@ -56,7 +61,11 @@ class DocGenerator {
           ...currentClasses[currentClassI],
         };
         currentClass.pageTitle = `${currentClass.name} Class | ${this.title}`;
-        currentClass.outputPath = this.getOutputPath(`${folders[folderI]}/classes/${currentClass.name}`);
+        currentClass.hierarchyPath = folders[folderI];
+        const classRelativePath = `${currentClass.hierarchyPath}/classes/${currentClass.name}`;
+        currentClass.outputPath = this.getOutputPath(classRelativePath);
+        currentClass.sourcePath = this.getSourcePath(classRelativePath);
+        currentClass.sourceRelativePath = this.getRelativePath(currentClass.sourcePath);
         currentClass.relativePath = this.getRelativePath(currentClass.outputPath);
         currentClasses[currentClassI] = currentClass;
       }
@@ -140,12 +149,18 @@ class DocGenerator {
         const currentClasses = files[folders[folderI]].classes;
         for (let currentClassI = 0; currentClassI < currentClasses.length; currentClassI += 1) {
           const currentClass = currentClasses[currentClassI];
+
           await FileHelper.renderTemplate({
             ...currentClass,
             templatePath: this.getTemplatePath('class'),
             data: {
               currentClass
             },
+          });
+
+          await FileHelper.renderSourceFile({
+            ...currentClass,
+            sourceTemplatePath: this.getTemplatePath('source'),
           });
         }
       }

@@ -1,4 +1,4 @@
-const babylon = require("babylon");
+const babelParser = require("@babel/parser");
 const traverse = require("babel-traverse");
 const t = require("babel-types");
 const marked = require('marked');
@@ -10,9 +10,24 @@ const Constants = require('./constants');
 
 const parseOptions = {
   sourceType: 'module',
+  allowUndeclaredExports: true,
   plugins: [
     'jsx',
+    'flow',
     'classProperties',
+    'asyncGenerators',
+    'bigInt',
+    'classPrivateProperties',
+    'classPrivateMethods',
+    'decoratorsBeforeExport',
+    'doExpressions',
+    'dynamicImport',
+    'exportDefaultFrom',
+    'exportNamespaceFrom',
+    'objectRestSpread',
+    'optionalCatchBinding',
+    'throwExpressions',
+    'topLevelAwait',
   ],
 };
 
@@ -34,12 +49,13 @@ async function parseContent(fileContent) {
     privateMethods: [],
     staticPublicMethods: [],
     staticPrivateMethods: [],
-    properties: [],
+    publicProperties: [],
+    privateProperties: [],
     staticProperties: [],
   };
 
   log('Parse file to ast');
-  const ast = babylon.parse(fileContent, parseOptions);
+  const ast = babelParser.parse(fileContent, parseOptions);
 
   traverse.default(ast, {
     enter(path) {
@@ -60,16 +76,24 @@ async function parseContent(fileContent) {
         getterPrivateMethods: [],
         setterPublicMethods: [],
         setterPrivateMethods: [],
-        properties: [],
+        publicProperties: [],
+        privateProperties: [],
         staticProperties: [],
         constructor: null,
         // leadingComments: path.node.leadingComments || [],
         tags: parseLeadingComments(path.container.leadingComments || path.node.leadingComments),
+        content: fileContent,
       };
 
       if (path.node.superClass) {
         currentClass.extends = {
           name: path.node.superClass.name,
+        };
+
+        if (path.node.superClass.object && path.node.superClass.property) {
+          currentClass.extends = {
+            name: `${path.node.superClass.object.name}.${path.node.superClass.property.name}`,
+          };
         }
       }
 
@@ -119,7 +143,7 @@ async function parseContent(fileContent) {
         },
         ClassProperty: function(path) {
           const currentProperty = {
-            name: path.node.id.name,
+            name: path.node.id ? path.node.id.name : (path.node.key.name),
             tags: parseLeadingComments(path.node.leadingComments),
             // leadingComments: path.node.leadingComments || [],
           };
@@ -127,7 +151,11 @@ async function parseContent(fileContent) {
           if (path.node.static) {
             currentClass.staticProperties.push(currentProperty);
           } else {
-           currentClass.properties.push(currentProperty);
+           if (currentProperty.name[0] === '_') {
+              currentClass.privateProperties.push(currentProperty);
+            } else {
+              currentClass.publicProperties.push(currentProperty);
+            }
           }
         }
       });

@@ -1,16 +1,21 @@
-<div class="method">
-  <h4>
-    <span class="access <%= access %>">
-      <%= access %>
-    </span>
-    <%= title %>
-  </h4>
-</div>
-
-<table>
+<table class="summary-table">
   <thead>
     <tr>
-      <td colspan="2"><%# sectionTitle %></td>
+      <td colspan="2">
+        <img src="/public/<%= access === 'private' ? 'lock.svg' : 'key.svg' %>" alt="<%= access %>">
+        <%= sectionTitle %>
+      </td>
     </tr>
   </thead>
+  <tbody>
+    <% for( var i = 0; i < properties.length; i +=1 ) { %>
+      <% var property = properties[i] %>
+      <tr>
+        <td><%= access %></td>
+        <td class="property-name">
+          <a href="#"><%= property.name %></a>
+          <div class="desc"><%- property.tags.subHeading || property.tags.description.trim() %></div>
+        </td>
+      </tr>
+      <% } %>
 </table>

@@ -43,11 +43,11 @@ async function aavanam(options) {
 
       // should take in others ??
     } catch (ex) {
-      log('File errored out', currentFile, ex);
+      console.error('File to parse', currentFile, ex);
     }
   }
 
-  log('Generating final output');
+  console.log('Generating final output');
   const myDoc = new DocGenerator(result);
   myDoc.generate();
 }

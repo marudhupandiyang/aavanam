@@ -10,9 +10,11 @@
     <div class="body-container">
       <%- include('partial/menusidebar') %>
       <div class="content">
-        <div class="breadcrumb"><%= currentClass.parent %></div>
+        <div class="breadcrumb">
+          <%- currentClass.hierarchyPath.replace(/\//g, '<span class="separator">/</span>') %> (<a title="Source to <% currentClass.name %>"href="/<%= currentClass.sourceRelativePath %>">source</a>)
+          </div>
         <h2 class="class-name"><%= currentClass.name %></h2>
-        <% if (currentClass.extends) { %>
+        <% if (currentClass.extends && currentClass.extends.name) { %>
           <div class="extends">
             <div class="title">Extends:</div>
             <div class="content">
@@ -53,30 +55,34 @@
           }) %>
         <% } %>
 
-        <% if (currentClass.staticProperties && currentClass.staticProperties.length > 0) { %>
-        <h4>Static Properties: </h4>
-          <% for( var i = 0; i < currentClass.staticProperties.length; i +=1 ) { %>
-              <%- include('partial/summary-table-class-property', {
-                access: 'public',
-                title: currentClass.staticProperties[i].name,
-                sectionTitle: 'Static Public Properties',
-                // params: currentClass.staticProperties[i].params,
-                // tags: currentClass.staticProperties[i].tags,
-              }) %>
-          <% }%>
+        <% if ((currentClass.staticProperties && currentClass.staticProperties.length > 0) || (currentClass.publicProperties && currentClass.publicProperties.length > 0) || (currentClass.privateProperties && currentClass.privateProperties.length > 0)) { %>
+          <h4>Member Summary</h4>
         <% } %>
 
-        <% if (currentClass.properties && currentClass.properties.length > 0) { %>
-        <h3>Class Properties: </h3>
-          <% for( var i = 0; i < currentClass.properties.length; i +=1 ) { %>
-              <%- include('partial/summary-table-class-property', {
-                access: 'public',
-                title: currentClass.properties[i].name,
-                // params: currentClass.properties[i].params,
-                // tags: currentClass.properties[i].tags,
-              }) %>
-          <% }%>
+        <% if (currentClass.staticProperties && currentClass.staticProperties.length > 0) { %>
+            <%- include('partial/summary-table-class-property', {
+              access: 'public',
+              sectionTitle: 'Static Member Properties',
+              properties: currentClass.staticProperties,
+            }) %>
         <% } %>
+
+        <% if (currentClass.publicProperties && currentClass.publicProperties.length > 0) { %>
+            <%- include('partial/summary-table-class-property', {
+              access: 'public',
+              sectionTitle: 'Public Members',
+              properties: currentClass.publicProperties,
+            }) %>
+        <% } %>
+
+        <% if (currentClass.privateProperties && currentClass.privateProperties.length > 0) { %>
+            <%- include('partial/summary-table-class-property', {
+              access: 'private',
+              sectionTitle: 'Private Members',
+              properties: currentClass.privateProperties,
+            }) %>
+        <% } %>
+
 
         <% if ((currentClass.getterPublicMethods && currentClass.getterPublicMethods.length > 0) || (currentClass.getterPrivateMethods && currentClass.getterPrivateMethods.length > 0)) {%>
           <h3>Getter Summary: </h3>

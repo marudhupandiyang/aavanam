@@ -2,7 +2,10 @@
 <table class="summary-table">
   <thead>
     <tr>
-      <td colspan="2"><%= sectionTitle %></td>
+      <td colspan="2">
+        <img src="/public/<%= access === 'private' ? 'lock.svg' : 'key.svg' %>" alt="<%= access %>">
+        <%= sectionTitle %>
+      </td>
     </tr>
   </thead>
   <tbody>

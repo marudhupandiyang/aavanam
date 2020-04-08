@@ -66,6 +66,39 @@ async function saveFile(filePath, content) {
   fs.writeFileSync(filePath, content);
 }
 
+async function renderSourceFile(currentClass) {
+  log('Writing source jsx');
+  return new Promise(async (resolve, reject) => {
+    try {
+      fs.mkdirSync(path.dirname(currentClass.sourcePath), { recursive: true });
+      // await saveFile(currentClass.sourcePath, currentClass.content);
+
+      ejs.renderFile(
+        currentClass.sourceTemplatePath,
+        {
+          ...viewVariables,
+          pageTitle: currentClass.name,
+          content: currentClass.content,
+        }, {},
+        (err, renderedHtml) => {
+        if (err) {
+          log('Error in rendering ejs', currentClass.sourcePath);
+          reject(err);
+          return;
+        }
+
+        console.log('Rendering ', currentClass.sourcePath);
+        saveFile(currentClass.sourcePath, renderedHtml);
+        resolve();
+      });
+      resolve();
+    } catch (ex) {
+      log('Error in source file generation', ex);
+      reject();
+    }
+  });
+}
+
 async function renderTemplate(options) {
   log('Rendering template', options.outputPath);
   return new Promise(async (resolve, reject) => {
@@ -114,6 +147,7 @@ async function renderTemplate(options) {
 module.exports = {
   readFile,
   saveFile,
+  renderSourceFile,
   removeDirectory,
   makeDirectoryForFilePath,
   renderTemplate,

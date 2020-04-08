@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title><%= pageTitle %> Source</title>
+    <link rel="stylesheet" type="text/css" href="/public/style.css">
+  </head>
+  <body>
+    <%- include('partial/header'); %>
+    <div class="body-container">
+      <%- include('partial/manual_menusidebar') %>
+      <div class="content">
+        <pre>
+          <%- content %>
+        </pre>
+      </div>
+    </div>
+    <%- include('partial/footer') %>
+  </body>
+</html>

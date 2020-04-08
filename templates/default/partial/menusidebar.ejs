@@ -2,17 +2,19 @@
   <ul>
     <% var fileNames = Object.keys(files).sort(); %>
     <% for(var j = 0; j < fileNames.length; j +=1) {%>
-      <h4><%= fileNames[j].replace('.', '') %></h4>
       <% var currentObj = files[fileNames[j]] %>
+      <% if (currentObj.classes.length) { %>
+        <h4><%- fileNames[j].replace('.', '').replace(/\//g,'<span class="seperator">-></span>') %></h4>
 
-      <% for(var i = 0; i < currentObj.classes.length; i += 1) { %>
-        <% var cClass = currentObj.classes[i]; %>
-        <li>
-          <a href="/<%= cClass.relativePath %>">
-            <span class="list-indicator class">C</span>
-            <%= cClass.name %>
-          </a>
-        </li>
+        <% for(var i = 0; i < currentObj.classes.length; i += 1) { %>
+          <% var cClass = currentObj.classes[i]; %>
+          <li>
+            <a href="/<%= cClass.relativePath %>">
+              <span class="list-indicator class">C</span>
+              <%= cClass.name %>
+            </a>
+          </li>
+        <% } %>
       <% } %>
     <% } %>
   </ul>

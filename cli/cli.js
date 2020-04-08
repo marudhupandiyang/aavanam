@@ -22,7 +22,7 @@ program
   .description(packageJson.description)
   .action(function(pattern, cmdObj) {
     options.rootDirectory = path.resolve(cmdObj.rootdirectory || './src');
-    options.globPattern = path.resolve(pattern || cmdObj.source || 'src/**/*.js');
+    options.globPattern = path.resolve(pattern || cmdObj.source || 'src/**/*.{js,jsx,mjs}');
     options.isRecursive = cmdObj.recursive;
     options.readme = path.resolve(cmdObj.readme || 'README.md');
     options.manualPath = path.resolve(cmdObj.manuals || 'manual');

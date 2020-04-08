@@ -119,10 +119,10 @@ body {
   white-space: nowrap;
 }
 
-.content table tbody tr:nth-child(2n) {
+/*.content table tbody tr:nth-child(2n) {
   background-color: #f6f8fa;
 }
-
+*/
 header {
   margin: 0;
   position: fixed;
@@ -194,8 +194,9 @@ footer {
 .left-menu ul li {
   list-style-position: inside;
   list-style-type: none;
-  line-height: 2;
   line-height: 1.5;
+  font-size: 0.9rem;
+  padding: 0.2rem 0.5rem;
 }
 
 .left-menu ul li a,
@@ -230,11 +231,18 @@ footer {
 .left-menu ul h3,
 .left-menu ul h4 {
   font-weight: 500;
-  word-break: break-all;
+  word-break: break-word;
+  font-size: 1rem;
 }
 
 .left-menu ul h4 {
   margin: 1rem 0 0.5rem;
+}
+
+.left-menu ul h4 .seperator {
+  color: #ccc;
+  display: inline-block;
+  margin: 0 0.4rem;
 }
 
 .content {
@@ -249,6 +257,11 @@ footer {
   font-size: 0.8rem;
   margin: 1rem 0;
   color: #777;
+}
+
+.class-detail .content .breadcrumb .separator {
+  margin: 0 0.5rem;
+  color: #666;
 }
 
 .class-detail .content .class-name {
@@ -304,6 +317,18 @@ footer {
 
 table.summary-table {
   width: 100%;
+}
+
+table.summary-table td img {
+  width: 10px;
+}
+
+table.summary-table tbody tr td .desc {
+  margin: 0.5rem 0.5rem 0;
+}
+
+table.summary-table tbody tr td .desc > p {
+  margin: 0;
 }
 
 table.summary-table tbody tr td {
