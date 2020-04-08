@@ -26,7 +26,7 @@ program
     options.isRecursive = cmdObj.recursive;
     options.readme = path.resolve(cmdObj.readme || 'README.md');
     options.manualPath = path.resolve(cmdObj.manuals || 'manual');
-    options.outputPath = path.resolve(cmdObj.output || './output');
+    options.outputPath = path.resolve(cmdObj.output || './documentation');
     options.gitRepoLink = cmdObj.git;
   });
 
