@@ -22,7 +22,7 @@
     "debug": "^4.1.1",
     "ejs": "^3.0.1",
     "glob": "^7.1.6",
-    "marked": "^0.8.0"
+    "marked": "^4.0.10"
   },
   "devDependencies": {
     "serve": "^11.3.0"
